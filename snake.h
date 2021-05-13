@@ -1,3 +1,5 @@
+#include <ncurses.h>
+#include <ctime>
 typedef struct SNAKE {
     int y;     // snake 위치 y좌표
     int x;     // snake 위치 x좌표

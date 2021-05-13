@@ -1,3 +1,5 @@
+#include <ncurses.h>
+#include <unistd.h>
 static inline bool
 kbhit(void){
     int ch;
