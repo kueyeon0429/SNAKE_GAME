@@ -60,8 +60,8 @@ void StateUpdate(){
 }
 
 // 화면 출력
-void Render(){
-
+void Render(WINDOW *win){
+    wrefresh(win);
 }
 
 
@@ -73,7 +73,7 @@ int main(){
 
   while(1){
     Update();
-    Render();
+    Render(win1);
   }
 
 }
