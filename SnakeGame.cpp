@@ -1,7 +1,7 @@
 #include <clocale>
 #include <ncurses.h>
 #include <iostream>
-#include <cstring>
+#include <ctime>
 using namespace std;
 
 int main()
@@ -28,14 +28,6 @@ int main()
   keypad(win1, TRUE);   // 특수 키 입력 가능
   curs_set(0);   // 커서 가림
 
-  //wattron(win1, COLOR_PAIR(1));
-  //mvwprintw(win1, 1, 1, "3");  // 지렁이 head
-  //mvwprintw(win1, 1, 2, "4");  // 지렁이 body
-  //mvwprintw(win1, 1, 3, "4");  // 지렁이 body
-  //mvwprintw(win1, 1, 1, "\u2B1B");  // 지렁이 head 유니코드
-  //mvwprintw(win1, 1, 3, "\u2B1C");  // 지렁이 body 유니코드
-  //wattroff(win1, COLOR_PAIR(1));
-
   wattron(win1, COLOR_PAIR(2));
   wborder(win1, '1', '1', '1', '1', '2', '2', '2', '2');
   wattroff(win1, COLOR_PAIR(2));
@@ -49,6 +41,7 @@ int main()
   wrefresh(win1);
 
   int pre = KEY_RIGHT;  // default 방향
+
   while(1){
       int input = wgetch(win1);  // 방향키 입력 받음
       // 초기화 및 배경 유지
@@ -123,23 +116,6 @@ int main()
             continue;
         }
       }
-      /*
-      switch(input){
-          case KEY_UP:
-          mvwprintw(win1, --row, col, "3");
-          continue;
-          case KEY_DOWN:
-          mvwprintw(win1, ++row, col, "3");
-          continue;
-          case KEY_LEFT:
-          mvwprintw(win1, row, --col, "3");
-          continue;
-          case KEY_RIGHT:
-          mvwprintw(win1, row, ++col, "3");
-          continue;
-      }
-      if(input == 'q') break;
-      */
       wattroff(win1, COLOR_PAIR(1));
   }
 
