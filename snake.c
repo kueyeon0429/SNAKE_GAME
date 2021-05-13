@@ -62,93 +62,99 @@ int Head(){
 }
 
 // 회전 ---------------완전수정해야댐,,
-void Turn(WINDOW *win, int head){
-  while(1){
-      // 초기화 및 배경 유지
-      wclear(win);
-      wbkgd(win, '0');
-      wattron(win, COLOR_PAIR(2));
-      wborder(win, '1', '1', '1', '1', '2', '2', '2', '2');
-      wattroff(win, COLOR_PAIR(2));
-      // 이동
-      wattron(win, COLOR_PAIR(1));
-      if(pre == KEY_LEFT){   // head방향: 좌
-        switch(input){
-            case KEY_UP:
-            mvwprintw(win, --y, ++x, "3");
-            pre = input;  // head방향(=pre) 갱신
-            continue;
-            case KEY_DOWN:
-            mvwprintw(win, ++y, ++x, "3");
-            pre = input;  // head방향(=pre) 갱신
-            continue;
-            case KEY_LEFT:
-            continue;
-            case KEY_RIGHT:
-            break;
-        }
+void Turn(WINDOW *win, int head, int input){
+    // 초기화 및 배경 유지
+    wclear(win);
+    wbkgd(win, '0');
+    wattron(win, COLOR_PAIR(2));
+    wborder(win, '1', '1', '1', '1', '2', '2', '2', '2');
+    wattroff(win, COLOR_PAIR(2));
+    // 이동
+    wattron(win, COLOR_PAIR(1));
+    if(head == KEY_LEFT){   // head방향: 좌
+      switch(input){
+          case KEY_UP:
+          mvwprintw(win, --y, ++x, "3");
+          head = input;  // head방향(=pre) 갱신
+          continue;
+          case KEY_DOWN:
+          mvwprintw(win, ++y, ++x, "3");
+          head = input;  // head방향(=pre) 갱신
+          continue;
+          case KEY_LEFT:
+          continue;
+          case KEY_RIGHT:
+          break;
       }
-      else if(pre == KEY_RIGHT){
-        switch(input){
-            case KEY_UP:
-            mvwprintw(win, --y, --x, "3");
-            pre = input;  // head방향(=pre) 갱신
-            continue;
-            case KEY_DOWN:
-            mvwprintw(win, ++y, --x, "3");
-            pre = input;  // head방향(=pre) 갱신
-            continue;
-            case KEY_LEFT:
-            break;
-            case KEY_RIGHT:
-            continue;
-        }
+    }
+    else if(head == KEY_RIGHT){
+      switch(input){
+          case KEY_UP:
+          mvwprintw(win, --y, --x, "3");
+          head = input;  // head방향(=pre) 갱신
+          continue;
+          case KEY_DOWN:
+          mvwprintw(win, ++y, --x, "3");
+          head = input;  // head방향(=pre) 갱신
+          continue;
+          case KEY_LEFT:
+          break;
+          case KEY_RIGHT:
+          continue;
       }
-      else if(pre == KEY_UP){
-        switch(input){
-            case KEY_UP:
-            continue;
-            case KEY_DOWN:
-            break;
-            case KEY_LEFT:
-            mvwprintw(win1, ++y, --x, "3");
-            pre = input;  // head방향(=pre) 갱신
-            continue;
-            case KEY_RIGHT:
-            mvwprintw(win, ++y, ++x, "3");
-            pre = input;  // head방향(=pre) 갱신
-            continue;
-        }
+    }
+    else if(head == KEY_UP){
+      switch(input){
+          case KEY_UP:
+          continue;
+          case KEY_DOWN:
+          break;
+          case KEY_LEFT:
+          mvwprintw(win, ++y, --x, "3");
+          head = input;  // head방향(=pre) 갱신
+          continue;
+          case KEY_RIGHT:
+          mvwprintw(win, ++y, ++x, "3");
+          head = input;  // head방향(=pre) 갱신
+          continue;
       }
-      else if(pre == KEY_DOWN){
-        switch(input){
-            case KEY_UP:
-            break;
-            case KEY_DOWN:
-            continue;
-            case KEY_LEFT:
-            mvwprintw(win, --y, --x, "3");
-            pre = input;  // head방향(=pre) 갱신
-            continue;
-            case KEY_RIGHT:
-            mvwprintw(win, --y, ++x, "3");
-            pre = input;  // head방향(=pre) 갱신
-            continue;
-        }
+    }
+    else if(head == KEY_DOWN){
+      switch(input){
+          case KEY_UP:
+          break;
+          case KEY_DOWN:
+          continue;
+          case KEY_LEFT:
+          mvwprintw(win, --y, --x, "3");
+          head = input;  // head방향(=pre) 갱신
+          continue;
+          case KEY_RIGHT:
+          mvwprintw(win, --y, ++x, "3");
+          head = input;  // head방향(=pre) 갱신
+          continue;
       }
-      wattroff(win, COLOR_PAIR(1));
-  }
+    }
+    wattroff(win, COLOR_PAIR(1));
 }
 
 // 상태 업데이트
 void StateUpdate(int head, clock_t curr){
-
+   if(((curr - t)/1000) >= HALF_SECOND){
+     // 초기화 및 배경 유지
+     wclear(win);
+     wbkgd(win, '0');
+     wattron(win, COLOR_PAIR(2));
+     wborder(win, '1', '1', '1', '1', '2', '2', '2', '2');
+     wattroff(win, COLOR_PAIR(2));
+     wattron(win, COLOR_PAIR(1));
+     if(head == KEY_LEFT) mvwprintw(win, y, --x, "3");
+     else if(head == KEY_RIGHT) mvwprintw(win, y, ++x, "3");
+     else if(head == KEY_UP) mvwprintw(win, --y, x, "3");
+     else if(head == KEY_DOWN) mvwprintw(win, ++y, --x, "3");
+     wattroff(win, COLOR_PAIR(1));
+   }
 }
-
-// 화면 출력
-//void Render(WINDOW *win){
-//    wrefresh(win);
-//}
 
 
 int main(){
@@ -158,12 +164,12 @@ int main(){
   SnakeInit();
 
   while(1){
-    snake.head = Head();
-    clock_t cuttTime = clock();
+    int input = Head();
+    if(input != null) Turn(snake.win, snake.head, input);
+    clock_t currTime = clock();
     StateUpdate(snake.head, currTime);
     wrefresh(snake.win)
   }
-
   getch();
   delwin(snake.win);
   endwin();
