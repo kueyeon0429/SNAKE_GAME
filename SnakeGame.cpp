@@ -40,28 +40,34 @@ int main()
   wborder(win1, '1', '1', '1', '1', '2', '2', '2', '2');
   wattroff(win1, COLOR_PAIR(2));
 
-  wrefresh(win1);
-
  // **** 2동****
   int y = 10, x = 10;
-  mvwprintw(win1, y, x, "3");
+  wattron(win1, COLOR_PAIR(1));
+  mvwprintw(win1, y, x, "3");    // 왜 이 처음 위치가 안 뜨는지 몰겠음;;
+  wattroff(win1, COLOR_PAIR(1));
+
   wrefresh(win1);
 
-  int pre = KEY_RIGHT;
+  int pre = KEY_RIGHT;  // default 방향
   while(1){
-      int input = wgetch(win1);
+      int input = wgetch(win1);  // 방향키 입력 받음
+      // 초기화 및 배경 유지
       wclear(win1);
       wbkgd(win1, '0');
       wattron(win1, COLOR_PAIR(2));
       wborder(win1, '1', '1', '1', '1', '2', '2', '2', '2');
       wattroff(win1, COLOR_PAIR(2));
-      if(pre == KEY_LEFT){
+      // 이동
+      wattron(win1, COLOR_PAIR(1));
+      if(pre == KEY_LEFT){   // head방향: 좌
         switch(input){
             case KEY_UP:
-            mvwprintw(win1, --y, ++x, "3"); // real moving in your screen
+            mvwprintw(win1, --y, ++x, "3");
+            pre = input;  // head방향(=pre) 갱신
             continue;
             case KEY_DOWN:
             mvwprintw(win1, ++y, ++x, "3");
+            pre = input;  // head방향(=pre) 갱신
             continue;
             case KEY_LEFT:
             continue;
@@ -72,10 +78,12 @@ int main()
       else if(pre == KEY_RIGHT){
         switch(input){
             case KEY_UP:
-            mvwprintw(win1, --y, --x, "3"); // real moving in your screen
+            mvwprintw(win1, --y, --x, "3");
+            pre = input;  // head방향(=pre) 갱신
             continue;
             case KEY_DOWN:
             mvwprintw(win1, ++y, --x, "3");
+            pre = input;  // head방향(=pre) 갱신
             continue;
             case KEY_LEFT:
             break;
@@ -91,9 +99,11 @@ int main()
             break;
             case KEY_LEFT:
             mvwprintw(win1, ++y, --x, "3");
+            pre = input;  // head방향(=pre) 갱신
             continue;
             case KEY_RIGHT:
             mvwprintw(win1, ++y, ++x, "3");
+            pre = input;  // head방향(=pre) 갱신
             continue;
         }
       }
@@ -105,16 +115,18 @@ int main()
             continue;
             case KEY_LEFT:
             mvwprintw(win1, --y, --x, "3");
+            pre = input;  // head방향(=pre) 갱신
             continue;
             case KEY_RIGHT:
             mvwprintw(win1, --y, ++x, "3");
+            pre = input;  // head방향(=pre) 갱신
             continue;
         }
       }
       /*
       switch(input){
           case KEY_UP:
-          mvwprintw(win1, --row, col, "3"); // real moving in your screen
+          mvwprintw(win1, --row, col, "3");
           continue;
           case KEY_DOWN:
           mvwprintw(win1, ++row, col, "3");
@@ -128,7 +140,7 @@ int main()
       }
       if(input == 'q') break;
       */
-      pre = input;
+      wattroff(win1, COLOR_PAIR(1));
   }
 
   getch();
