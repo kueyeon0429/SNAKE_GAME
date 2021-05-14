@@ -44,6 +44,7 @@ void WinInit(WINDOW *win){
   wborder(win, '|','|','-','-','+','+','+','+');
   wattroff(win, COLOR_PAIR(2));
   wrefresh(win);
+
   SnakeInit(win);
   Map(win);
 }
@@ -159,9 +160,8 @@ int main(){
   WinInit(win);
 
 
-  //while(1){
-  //  Turn(win);
-  //}
+  Turn(win);
+
   getch();
   delwin(win);
   endwin();
