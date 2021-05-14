@@ -6,7 +6,7 @@
 #include "kbhit.h"
 using namespace std;
 
-const int HALF_SECOND = 0.5;
+const double HALF_SECOND = 0.5;
 
 SNAKE snake;   // SNAKE 객체 생성
 
@@ -30,29 +30,27 @@ void TermInit(){
 }
 
 // 윈도우 초기화
-void WinInit(WINDOW *win){
-  win = newwin(21, 21, 2, 1);   // 맵 생성
-  wbkgd(win, '0');   // 맵 배경
+void WinInit(){
+  snake.win = newwin(21, 21, 2, 1);   // 맵 생성
+  wbkgd(snake.win, '0');   // 맵 배경
 
-  keypad(win, TRUE);   // 특수 키 입력 가능
+  keypad(snake.win, TRUE);   // 특수 키 입력 가능
   curs_set(0);   // 커서 가림
 
-  wattron(win, COLOR_PAIR(2));
-  wborder(win, '1', '1', '1', '1', '2', '2', '2', '2');
-  wattroff(win, COLOR_PAIR(2));
-}
+  wattron(snake.win, COLOR_PAIR(2));
+  wborder(snake.win, '1', '1', '1', '1', '2', '2', '2', '2');
+  wattroff(snake.win, COLOR_PAIR(2));
 
-// sanke 초기화
-void SnakeInit(WINDOW *win){
+  // sanke 초기화
   snake.y = 10;   // 처음 위치 초기화
   snake.x = 10;
   snake.length = 3;   // 길이 초기화
   snake.head = KEY_RIGHT;   // 방향 초기화
-  wattron(win, COLOR_PAIR(1));
-  mvwprintw(win, snake.y, snake.x, "3");
-  wattroff(win, COLOR_PAIR(1));
+  wattron(snake.win, COLOR_PAIR(1));
+  mvwprintw(snake.win, snake.y, snake.x, "3");
+  wattroff(snake.win, COLOR_PAIR(1));
 
-  wrefresh(win);
+  wrefresh(snake.win);
 }
 
 // 방향키 받는 함수
@@ -62,23 +60,23 @@ int Head(){
 }
 
 // 회전
-void Turn(WINDOW *win, int head, int input, int y, int x){
+void Turn(int head, int input){
     // 초기화 및 배경 유지
-    wclear(win);
-    wbkgd(win, '0');
-    wattron(win, COLOR_PAIR(2));
-    wborder(win, '1', '1', '1', '1', '2', '2', '2', '2');
-    wattroff(win, COLOR_PAIR(2));
+    wclear(snake.win);
+    wbkgd(snake.win, '0');
+    wattron(snake.win, COLOR_PAIR(2));
+    wborder(snake.win, '1', '1', '1', '1', '2', '2', '2', '2');
+    wattroff(snake.win, COLOR_PAIR(2));
     // 이동
-    wattron(win, COLOR_PAIR(1));
+    wattron(snake.win, COLOR_PAIR(1));
     if(head == KEY_LEFT){   // head방향: 좌
       switch(input){
           case KEY_UP:
-          mvwprintw(win, --y, ++x, "3");
+          mvwprintw(snake.win, --snake.y, ++snake.x, "3");
           head = input;  // head방향(=pre) 갱신
           break;
           case KEY_DOWN:
-          mvwprintw(win, ++y, ++x, "3");
+          mvwprintw(snake.win, ++snake.y, ++snake.x, "3");
           head = input;  // head방향(=pre) 갱신
           break;
           case KEY_LEFT:
@@ -90,11 +88,11 @@ void Turn(WINDOW *win, int head, int input, int y, int x){
     else if(head == KEY_RIGHT){
       switch(input){
           case KEY_UP:
-          mvwprintw(win, --y, --x, "3");
+          mvwprintw(snake.win, --snake.y, --snake.x, "3");
           head = input;  // head방향(=pre) 갱신
           break;
           case KEY_DOWN:
-          mvwprintw(win, ++y, --x, "3");
+          mvwprintw(snake.win, ++snake.y, --snake.x, "3");
           head = input;  // head방향(=pre) 갱신
           break;
           case KEY_LEFT:
@@ -110,11 +108,11 @@ void Turn(WINDOW *win, int head, int input, int y, int x){
           case KEY_DOWN:
           break;  // fail
           case KEY_LEFT:
-          mvwprintw(win, ++y, --x, "3");
+          mvwprintw(snake.win, ++snake.y, --snake.x, "3");
           head = input;  // head방향(=pre) 갱신
           break;
           case KEY_RIGHT:
-          mvwprintw(win, ++y, ++x, "3");
+          mvwprintw(snake.win, ++snake.y, ++snake.x, "3");
           head = input;  // head방향(=pre) 갱신
           break;
       }
@@ -126,48 +124,47 @@ void Turn(WINDOW *win, int head, int input, int y, int x){
           case KEY_DOWN:
           break;
           case KEY_LEFT:
-          mvwprintw(win, --y, --x, "3");
+          mvwprintw(snake.win, --snake.y, --snake.x, "3");
           head = input;  // head방향(=pre) 갱신
           break;
           case KEY_RIGHT:
-          mvwprintw(win, --y, ++x, "3");
+          mvwprintw(snake.win, --snake.y, ++snake.x, "3");
           head = input;  // head방향(=pre) 갱신
           break;
       }
     }
-    wattroff(win, COLOR_PAIR(1));
+    wattroff(snake.win, COLOR_PAIR(1));
 }
 
 // 상태 업데이트
-void StateUpdate(WINDOW *win, int head, clock_t curr, int y, int x){
-   if(((curr - snake.standTime)/1000) >= HALF_SECOND){
+void StateUpdate(int head, clock_t curr){
+   if(((curr - snake.standTime)/1000000) >= HALF_SECOND){
+     snake.standTime = curr;
      // 초기화 및 배경 유지
-     wclear(win);
-     wbkgd(win, '0');
-     wattron(win, COLOR_PAIR(2));
-     wborder(win, '1', '1', '1', '1', '2', '2', '2', '2');
-     wattroff(win, COLOR_PAIR(2));
-     wattron(win, COLOR_PAIR(1));
-     if(head == KEY_LEFT) mvwprintw(win, y, --x, "3");
-     else if(head == KEY_RIGHT) mvwprintw(win, y, ++x, "3");
-     else if(head == KEY_UP) mvwprintw(win, --y, x, "3");
-     else if(head == KEY_DOWN) mvwprintw(win, ++y, --x, "3");
-     wattroff(win, COLOR_PAIR(1));
+     wclear(snake.win);
+     wbkgd(snake.win, '0');
+     wattron(snake.win, COLOR_PAIR(2));
+     wborder(snake.win, '1', '1', '1', '1', '2', '2', '2', '2');
+     wattroff(snake.win, COLOR_PAIR(2));
+     wattron(snake.win, COLOR_PAIR(1));
+     if(head == KEY_LEFT) mvwprintw(snake.win, snake.y, --snake.x, "3");
+     else if(head == KEY_RIGHT) mvwprintw(snake.win, snake.y, ++snake.x, "3");
+     else if(head == KEY_UP) mvwprintw(snake.win, --snake.y, snake.x, "3");
+     else if(head == KEY_DOWN) mvwprintw(snake.win, ++snake.y, --snake.x, "3");
+     wattroff(snake.win, COLOR_PAIR(1));
    }
 }
-
 
 int main(){
   OptionInit();
   TermInit();
-  WinInit(snake.win);
-  SnakeInit(snake.win);
+  WinInit();
 
   while(1){
     int input = Head();
-    if(input) Turn(snake.win, snake.head, input, snake.y, snake.x);   // input값 실행시
+    if(input) Turn(snake.head, input);   // input값 실행시
     clock_t currTime = clock();
-    StateUpdate(snake.win, snake.head, currTime, snake.y, snake.x);
+    StateUpdate(snake.head, currTime);
     wrefresh(snake.win);
   }
   getch();
