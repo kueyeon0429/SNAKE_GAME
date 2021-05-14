@@ -13,6 +13,7 @@ SNAKE snake;
 
 void SnakeInit(WINDOW *win);
 void Map(WINDOW *win);
+void Turn(WINDOW *win);
 
 // 옵션 초기화
 void OptionInit(){
@@ -47,6 +48,7 @@ void WinInit(WINDOW *win){
 
   SnakeInit(win);
   Map(win);
+  Turn(win);
 }
 
 // sanke 초기화
@@ -74,7 +76,7 @@ int Head(){
 
 // 회전 ---------------완전수정해야댐,,
 void Turn(WINDOW *win){
-  wattron(win, COLOR_PAIR(2));
+  wattron(win, COLOR_PAIR(1));
   int ch=KEY_LEFT;
   int a=0;
   char key[1];
@@ -83,7 +85,7 @@ void Turn(WINDOW *win){
   int b = 0;
   while (1) {
       t = clock();
-      while ((clock() - t) <= 2000000) {
+      while ((clock() - t) <= 1000000) {
         //cout << clock() - t << endl;
         if (b==0) {
           ch = getch();
@@ -110,7 +112,7 @@ void Turn(WINDOW *win){
       mvwprintw(win, snake.y, snake.x, "3");
       wrefresh(win);
   }
-  wattroff(win, COLOR_PAIR(2));
+  wattroff(win, COLOR_PAIR(1));
   wrefresh(win);
 }
 
@@ -145,9 +147,9 @@ void Map(WINDOW *win) {
   wborder(win, '|', '|', '-', '-', '+', '+', '+', '+');
   wrefresh(win);
 
-  wattron(win, COLOR_PAIR(2));
-  mvwprintw(win, 10, 10, "X");
-  wattroff(win, COLOR_PAIR(2));
+  wattron(win, COLOR_PAIR(1));
+  mvwprintw(win, 10, 10, "3");
+  wattroff(win, COLOR_PAIR(1));
   wrefresh(win);
 }
 
@@ -160,7 +162,6 @@ int main(){
   WinInit(win);
 
 
-  Turn(win);
 
   getch();
   delwin(win);
