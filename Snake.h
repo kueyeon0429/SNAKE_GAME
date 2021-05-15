@@ -7,5 +7,6 @@ typedef struct SNAKE {
   clock_t standTime;   // 기준 시간
   clock_t currTime;   // 현재 시간
   vector<vector<int>> vec; //뱀의 최대 길이 30  //뱀 위치 정보
-  //WINDOW *win;   // 윈도우
+  bool fail;
+  WINDOW *win;   // 윈도우
 } SNAKE;

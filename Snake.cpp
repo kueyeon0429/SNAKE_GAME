@@ -62,15 +62,14 @@ void WinInit(){
   wattroff(snake.win, COLOR_PAIR(2));
   //snake.head = KEY_LEFT;   // 방향 초기화
 
-
-  //wrefresh(win);
 }
 
 // snake 초기화
 void SnakeInit(){
+  snake.fail = true;
   snake.y = 10;   // 처음 위치 초기화
   snake.x = 10;
-  snake.length = 3;   // 길이 초기화
+  snake.length = 8;   // 길이 초기화
   //snake.head = KEY_LEFT;   // 방향 초기화
 
   //뱀의 시작 지점
@@ -78,10 +77,10 @@ void SnakeInit(){
   vec1.push_back(snake.y);
   vec1.push_back(snake.x);
   snake.vec.push_back(vec1);
-  vec1[1]++;
-  snake.vec.push_back(vec1);
-  vec1[1]++;
-  snake.vec.push_back(vec1);
+  for(int i = 0; i < snake.length-1; i++){
+    vec1[1]++;
+    snake.vec.push_back(vec1);
+  }
 
   //초기 뱀 출력
   wattron(snake.win, COLOR_PAIR(1));
@@ -159,19 +158,37 @@ void move() {
     }
 }
 
+// 실패 조건 판단
+void fail(){
+  // wall에 닿는 경우
+  if(snake.x == 0 || snake.x == 22 || snake.y == 0 || snake.y == 22) snake.fail = false;
+  // body에 닿는 경우
+  for (int i=4; i < snake.length; i++){
+    if(snake.y == snake.vec[i][0] && snake.x == snake.vec[i][1]){
+      snake.fail = false;
+      break;
+    }
+  }
+}
+
+
+/****************main*******************/
 int main(){
   OptionInit();
   TermInit();
   WinInit();
 
+  bool t = true;
+
   SnakeInit(); // snake 초기화
-  while (1) {          //무한 반복
+  while(snake.fail) {          //무한 반복
     usleep(500000);    //0.5초 대기
     press();           //방향키 입력
     deletesnake(); //이전 뱀 출력된거 삭제
     Turn();         //머리 방향 초기화
     move();         //머리 위치 이동
     StateUpdate();
+    fail();   // 실패 조건 판단
     printsnake(); //새로운 뱀 출력
   }
   delwin(snake.win);
