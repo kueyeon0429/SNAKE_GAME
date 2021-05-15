@@ -12,12 +12,12 @@ using namespace std;
 
 SNAKE snake;
 
-void SnakeInit(WINDOW *win);
+void SnakeInit();
 void Map(WINDOW *win);
-void Turn(WINDOW *win);
-void move(WINDOW *win);
+void Turn();
+void move();
 void SnakeFirst(WINDOW *win);
-void StateUpdate(WINDOW *win);
+void StateUpdate();
 void deletesnake(WINDOW *win);
 void printsnake(WINDOW *win);
 
@@ -189,7 +189,7 @@ void move() {
 }
 
 void time() {
- 
+
 }
 
 
@@ -201,16 +201,16 @@ int main(){
   WinInit(win);
 
   win = newwin(23, 23, 1, 1);
-  SnakeInit(win); // snake 초기화
+  SnakeInit(); // snake 초기화
   Map(win); //맵 생성
   SnakeFirst(win); // 초기 snake 출력
   while (1) {          //무한 반복
     usleep(500000);    //0.5초 대기
     press();           //방향키 입력
     deletesnake(win); //이전 뱀 출력된거 삭제
-    Turn(win);         //머리 방향 초기화
-    move(win);         //머리 위치 이동
-    StateUpdate(win);
+    Turn();         //머리 방향 초기화
+    move();         //머리 위치 이동
+    StateUpdate();
     printsnake(win); //새로운 뱀 출력
   }
   delwin(win);
