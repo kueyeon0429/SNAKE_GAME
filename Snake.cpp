@@ -186,31 +186,27 @@ void move() {
 }
 
 void time() {
-
-
 }
 
 
 int main(){
-  WINDOW *win;
-
+  //WINDOW *win;
   OptionInit();
   TermInit();
-  WinInit(win);
-
-  win = newwin(23, 23, 1, 1);
-  Map(win); //맵 생성
-  SnakeInit(win); // snake 초기화
+  WinInit(snake.win);
+  snake.win = newwin(23, 23, 1, 1);
+  Map(snake.win); //맵 생성
+  SnakeInit(snake.win); // snake 초기화
   while (1) {          //무한 반복
     usleep(500000);    //0.5초 대기
     press();           //방향키 입력
-    deletesnake(win); //이전 뱀 출력된거 삭제
+    deletesnake(snake.win); //이전 뱀 출력된거 삭제
     Turn();         //머리 방향 초기화
     move();         //머리 위치 이동
     StateUpdate();
-    printsnake(win); //새로운 뱀 출력
+    printsnake(snake.win); //새로운 뱀 출력
   }
-  delwin(win);
+  delwin(snake.win);
   endwin();
   return 0;
 }
