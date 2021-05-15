@@ -144,9 +144,13 @@ void StateUpdate(){
   vec1.push_back(snake.y);
   vec1.push_back(snake.x);
   snake.vec.insert(snake.vec.begin(),vec1);
-  if (snake.vecitem.end()==find(snake.vecitem.begin(), snake.vecitem.end(), vec1)) {
-    snake.vec.pop_back();  //아이템을 먹지 못한 경우
+  if (snake.vecGrowthItem.end()==find(snake.vecGrowthItem.begin(), snake.vecGrowthItem.end(), vec1)) {
+    snake.vec.pop_back();  //길어지는 아이템을 먹지 못한 경우
   } else snake.length++;   //아이템을 먹은 경우
+  if (snake.vecPoisonItem.end()!=find(snake.vecPoisonItem.begin(), snake.vecPoisonItem.end(), vec1)) {
+    snake.vec.pop_back();  //짧아지는 아이템을 먹은 경우
+    snake.length--;
+  }
 }
 
 
@@ -191,16 +195,22 @@ void move() {
     }
 }
 
-void InsertItemTime() {
-  snake.InsertItemTime = clock();
+void InsertGrowthItemTime() {
+  snake.InsertGrowthItemTime = clock();
 }
-void DeleteItemTime() {
-  snake.DeleteItemTime = clock();
+void DeleteGrowthItemTime() {
+  snake.DeleteGrowthItemTime = clock();
+}
+void InsertPoisonItemTime() {
+  snake.InsertPoisonItemTime = clock();
+}
+void DeletePoisonItemTime() {
+  snake.DeletePoisonItemTime = clock();
 }
 
-//아이템 출현
-void insertitem() {
-  InsertItemTime();
+//먹으면 길어지는 아이템
+void InsertGrowthItem() {
+  InsertGrowthItemTime();
   srand(time(NULL));
   vector <int> vec2 = {0, 0};  //임시 1차원 벡터
   do {
@@ -210,21 +220,50 @@ void insertitem() {
     int b = rand() % 21 + 1;
     vec2.push_back(a);
     vec2.push_back(b);
-  } while (snake.vec.end()!=find(snake.vec.begin(), snake.vec.end(), vec2));
-  snake.vecitem.push_back(vec2);
+  } while (snake.vec.end()!=find(snake.vec.begin(), snake.vec.end(), vec2) && snake.vecPoisonItem.end()!=find(snake.vecPoisonItem.begin(), snake.vecPoisonItem.end(), vec2));
+  snake.vecGrowthItem.push_back(vec2);
   wattron(snake.win, COLOR_PAIR(1));
   mvwprintw(snake.win, vec2[0], vec2[1], "5");
   wattroff(snake.win, COLOR_PAIR(1));
   wrefresh(snake.win);
 }
 
-//아이템 삭제
-void deleteitem() {
-  DeleteItemTime();
-  mvwprintw(snake.win, snake.vecitem[0][0], snake.vecitem[0][1], "0");
-  snake.vecitem.erase(snake.vecitem.begin());
+//길어지는 아이템 삭제
+void DeleteGrowthItem() {
+  DeleteGrowthItemTime();
+  mvwprintw(snake.win, snake.vecGrowthItem[0][0], snake.vecGrowthItem[0][1], "0");
+  snake.vecGrowthItem.erase(snake.vecGrowthItem.begin());
   wrefresh(snake.win);
 }
+
+//먹으면 짧아지는 아이템
+void InsertPoisonItem() {
+  InsertPoisonItemTime();
+  srand(time(NULL)+1000000);
+  vector <int> vec3 = {0, 0};  //임시 1차원 벡터
+  do {
+    vec3.pop_back();
+    vec3.pop_back();
+    int a = rand() % 21 + 1;
+    int b = rand() % 21 + 1;
+    vec3.push_back(a);
+    vec3.push_back(b);
+  } while (snake.vec.end()!=find(snake.vec.begin(), snake.vec.end(), vec3) && snake.vecGrowthItem.end()!=find(snake.vecGrowthItem.begin(), snake.vecGrowthItem.end(), vec3));
+  snake.vecPoisonItem.push_back(vec3);
+  wattron(snake.win, COLOR_PAIR(1));
+  mvwprintw(snake.win, vec3[0], vec3[1], "6");
+  wattroff(snake.win, COLOR_PAIR(1));
+  wrefresh(snake.win);
+}
+
+//짧아지는 아이템 삭제
+void DeletePoisonItem() {
+  DeletePoisonItemTime();
+  mvwprintw(snake.win, snake.vecPoisonItem[0][0], snake.vecPoisonItem[0][1], "0");
+  snake.vecPoisonItem.erase(snake.vecPoisonItem.begin());
+  wrefresh(snake.win);
+}
+
 void fail(){
   // wall에 닿는 경우
   if(snake.x == 0 || snake.x == 22 || snake.y == 0 || snake.y == 22) snake.fail = false;
@@ -263,10 +302,12 @@ int main(){
   //win = newwin(23, 23, 1, 1);
   //Map(win); //맵 생성
   SnakeInit(); // snake 초기화
-  InsertItemTime();
-  DeleteItemTime();
+  InsertGrowthItemTime();
+  DeleteGrowthItemTime();
+  InsertPoisonItemTime();
+  DeletePoisonItemTime();
   while (snake.fail) {          //무한 반복
-    usleep(300000);    //0.5초 대기
+    usleep(100000);    //0.5초 대기
     press();           //방향키 입력
     deletesnake(); //이전 뱀 출력된거 삭제
     Turn();         //머리 방향 초기화
@@ -274,8 +315,10 @@ int main(){
     StateUpdate();
     fail();
     printsnake(); //새로운 뱀 출력
-    if ((1.0)*(clock()-snake.InsertItemTime)/1000.0>2) insertitem();
-    if ((1.0)*(clock()-snake.DeleteItemTime)/1000.0>3) deleteitem();
+    if ((1.0)*(clock()-snake.InsertGrowthItemTime)>2000) InsertGrowthItem();
+    if ((1.0)*(clock()-snake.DeleteGrowthItemTime)>4000) DeleteGrowthItem();
+    if ((1.0)*(clock()-snake.InsertPoisonItemTime)>1000) InsertPoisonItem();
+    if ((1.0)*(clock()-snake.DeletePoisonItemTime)>4000) DeletePoisonItem();
   }
   delwin(snake.win);
   result_win();
