@@ -204,6 +204,7 @@ void move(WINDOW *win) {
 }
 
 void time() {
+
 }
 
 
