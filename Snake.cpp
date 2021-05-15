@@ -8,7 +8,7 @@
 #include <vector>
 //#include "kbhit.c"
 using namespace std;
-#include "snake.h"
+#include "Snake.h"
 
 SNAKE snake;
 
