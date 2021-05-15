@@ -82,7 +82,6 @@ void WinInit(WINDOW *win){
     move(win);         //머리 위치 이동
     StateUpdate(win);
     printsnake(win); //새로운 뱀 출력
-    wrefresh(win);
   }
 }
 
@@ -91,7 +90,7 @@ void SnakeInit(WINDOW *win){
   snake.y = 10;   // 처음 위치 초기화
   snake.x = 10;
   snake.length = 3;   // 길이 초기화
-  snake.head = KEY_LEFT;   // 방향 초기화
+  //snake.head = KEY_LEFT;   // 방향 초기화
 
   //뱀의 시작 지점
   vector <int> vec1;     //임시 1차원 벡터
@@ -135,16 +134,16 @@ void printsnake(WINDOW *win) {
 
 //머리 방향 초기화
 void Turn(WINDOW *win){
-  if (snake.ch == KEY_LEFT) {
+  if (snake.ch == KEY_LEFT && snake.head != KEY_RIGHT) {
     snake.head = KEY_LEFT;
   }
-  else if (snake.ch == KEY_RIGHT) {
+  else if (snake.ch == KEY_RIGHT && snake.head != KEY_LEFT) {
     snake.head = KEY_RIGHT;
   }
-  else if (snake.ch == KEY_UP) {
+  else if (snake.ch == KEY_UP && snake.head != KEY_DOWN) {
     snake.head = KEY_UP;
   }
-  else if (snake.ch == KEY_DOWN) {
+  else if (snake.ch == KEY_DOWN && snake.head != KEY_UP) {
     snake.head = KEY_DOWN;
   }
 }
@@ -191,19 +190,15 @@ void Map(WINDOW *win) {
 //머리 위치 이동
 void move(WINDOW *win) {
     if (snake.head == KEY_LEFT) {
-      //mvwprintw(win, snake.y, snake.x, "0");
       snake.x--;
     }
     else if (snake.head == KEY_RIGHT) {
-      //mvwprintw(win, snake.y, snake.x, "0");
       snake.x++;
     }
     else if (snake.head == KEY_UP) {
-      //mvwprintw(win, snake.y, snake.x, "0");
       snake.y--;
     }
     else if (snake.head == KEY_DOWN) {
-      //mvwprintw(win, snake.y, snake.x, "0");
       snake.y++;
     }
 }
