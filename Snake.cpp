@@ -85,8 +85,9 @@ void SnakeInit(){
 
   //초기 뱀 출력
   wattron(snake.win, COLOR_PAIR(1));
-  for (int i=0; i<snake.length; i++) {
-      mvwprintw(snake.win, snake.vec[i][0], snake.vec[i][1], "3");
+  mvwprintw(snake.win, snake.vec[0][0], snake.vec[0][1], "3");
+  for (int i=1; i<snake.length; i++) {
+      mvwprintw(snake.win, snake.vec[i][0], snake.vec[i][1], "4");
   }
   wattroff(snake.win, COLOR_PAIR(1));
   wrefresh(snake.win);
@@ -102,8 +103,9 @@ void deletesnake() {
 // 뱀 출력
 void printsnake() {
   wattron(snake.win, COLOR_PAIR(1));
-  for (int i=0; i<snake.length; i++) {
-    mvwprintw(snake.win, snake.vec[i][0], snake.vec[i][1], "3");
+  mvwprintw(snake.win, snake.vec[0][0], snake.vec[0][1], "3");
+  for (int i=1; i<snake.length; i++) {
+    mvwprintw(snake.win, snake.vec[i][0], snake.vec[i][1], "4");
   }
   wattroff(snake.win, COLOR_PAIR(1));
   wrefresh(snake.win);
@@ -141,32 +143,6 @@ void StateUpdate(){
   snake.vec.pop_back();
 }
 
-
-//맵 생성
-void Map() {
-  string mapstring =
-  "211111111111111111112100000000000000000001100000000000000000001100000000000000000001100000000000000000001100000000000000000001100000000000000000001100000000000000000001100000000000000000001100000000000000000001100000000000000000001100000000000000000001100000000000000000001100000000000000000001100000000000000000001100000000000000000001100000000000000000001100000000000000000001100000000000000000001100000000000000000001211111111111111111112";
-  int mapline = 21;  //맵 줄 수
-  int num = 0;   //임시변수
-
-  //2차원 배열을 생성하여 맵을 2차원 배열에 저장
-  int **map = new int *[mapline];
-  for (int i=0; i<mapline; i++)
-    map[i] = new int[mapline];
-  for (int i = 0; i < mapline; i++)
-    for (int j = 0; j < mapline; j++)
-      map[i][j] = mapstring[num++] - '0';
-
-  //윈도우에 맵 출력
-  wattron(snake.win, COLOR_PAIR(1));
-  for (int i=0; i<mapline; i++) {
-    for (int j=0; j<mapline; j++) {
-      mvwprintw(snake.win, i+1, j+1, to_string(map[i][j]).c_str());
-    }
-  }
-  wattroff(snake.win, COLOR_PAIR(1));
-}
-
 //머리 위치 이동
 void move() {
     if (snake.head == KEY_LEFT) {
@@ -184,14 +160,10 @@ void move() {
 }
 
 int main(){
-  //WINDOW *win;
-
   OptionInit();
   TermInit();
   WinInit();
 
-  //win = newwin(23, 23, 1, 1);
-  //Map(win); //맵 생성
   SnakeInit(); // snake 초기화
   while (1) {          //무한 반복
     usleep(500000);    //0.5초 대기
