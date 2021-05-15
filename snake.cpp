@@ -74,6 +74,7 @@ void SnakeInit(){
   snake.x = 10;
   snake.length = 3;   // 길이 초기화
   //snake.head = KEY_LEFT;   // 방향 초기화
+  snake.fail = true;
 
   //뱀의 시작 지점
   vector <int> vec1;     //임시 1차원 벡터
@@ -138,11 +139,14 @@ void Turn(){
 
 // 상태 업데이트
 void StateUpdate(){
+  //뱀 벡터 초기화
   vector <int> vec1;     //임시 1차원 벡터
   vec1.push_back(snake.y);
   vec1.push_back(snake.x);
   snake.vec.insert(snake.vec.begin(),vec1);
-  snake.vec.pop_back();
+  if (snake.vecitem.end()==find(snake.vecitem.begin(), snake.vecitem.end(), vec1)) {
+    snake.vec.pop_back();  //아이템을 먹지 못한 경우
+  } else snake.length++;   //아이템을 먹은 경우
 }
 
 
@@ -187,13 +191,16 @@ void move() {
     }
 }
 
-void time() {
-  snake.startTime = clock();
+void InsertItemTime() {
+  snake.InsertItemTime = clock();
+}
+void DeleteItemTime() {
+  snake.DeleteItemTime = clock();
 }
 
-//아이템 랜덤 출현
-void item() {
-  time();
+//아이템 출현
+void insertitem() {
+  InsertItemTime();
   srand(time(NULL));
   vector <int> vec2 = {0, 0};  //임시 1차원 벡터
   do {
@@ -211,6 +218,40 @@ void item() {
   wrefresh(snake.win);
 }
 
+//아이템 삭제
+void deleteitem() {
+  DeleteItemTime();
+  mvwprintw(snake.win, snake.vecitem[0][0], snake.vecitem[0][1], "0");
+  snake.vecitem.erase(snake.vecitem.begin());
+  wrefresh(snake.win);
+}
+void fail(){
+  // wall에 닿는 경우
+  if(snake.x == 0 || snake.x == 22 || snake.y == 0 || snake.y == 22) snake.fail = false;
+  // body에 닿는 경우
+  for (int i=4; i < snake.length; i++){
+    if(snake.y == snake.vec[i][0] && snake.x == snake.vec[i][1]){
+      snake.fail = false;
+      break;
+    }
+  }
+}
+
+void result_win(){
+  snake.res = newwin(23, 23, 1, 1);
+   // 맵 생성
+  wbkgd(snake.res, COLOR_PAIR(3));   // 맵 배경
+  keypad(stdscr, TRUE);   // 특수 키 입력 가능
+  curs_set(0);   // 커서 가림
+  wattron(snake.res, COLOR_PAIR(3));
+  if(snake.fail == false) mvwprintw(snake.res, 1, 1, "fail");
+  //else~ 성공으로 겜 끝난 경우는 또 따로
+  wattroff(snake.res, COLOR_PAIR(3));
+  wattron(snake.res, COLOR_PAIR(1));
+  wborder(snake.res, '*', '*', '*', '*', '*', '*', '*', '*');
+  wattroff(snake.res, COLOR_PAIR(1));
+  wrefresh(snake.res);
+}
 
 
 int main(){
@@ -218,22 +259,27 @@ int main(){
   OptionInit();
   TermInit();
   WinInit();
-
+  bool t = true;
   //win = newwin(23, 23, 1, 1);
   //Map(win); //맵 생성
   SnakeInit(); // snake 초기화
-  time();
-  while (1) {          //무한 반복
+  InsertItemTime();
+  DeleteItemTime();
+  while (snake.fail) {          //무한 반복
     usleep(300000);    //0.5초 대기
     press();           //방향키 입력
     deletesnake(); //이전 뱀 출력된거 삭제
     Turn();         //머리 방향 초기화
     move();         //머리 위치 이동
     StateUpdate();
+    fail();
     printsnake(); //새로운 뱀 출력
-    if ((1.0)*(clock()-snake.startTime)/1000>2) item();
+    if ((1.0)*(clock()-snake.InsertItemTime)/1000.0>2) insertitem();
+    if ((1.0)*(clock()-snake.DeleteItemTime)/1000.0>3) deleteitem();
   }
   delwin(snake.win);
+  result_win();
+  getch();
   endwin();
   return 0;
 }
