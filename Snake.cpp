@@ -60,33 +60,18 @@ void press() {
 
 // 윈도우 초기화
 void WinInit(WINDOW *win){
-  win = newwin(23, 23, 1, 1);   // 맵 생성
+   // 맵 생성
   wbkgd(win, COLOR_PAIR(1));   // 맵 배경
-
   keypad(stdscr, TRUE);   // 특수 키 입력 가능
   curs_set(0);   // 커서 가림
-
   wattron(win, COLOR_PAIR(2));
   wborder(win, '|','|','-','-','+','+','+','+');
   wattroff(win, COLOR_PAIR(2));
   wrefresh(win);
-
-  SnakeInit(win); // snake 초기화
-  Map(win); //맵 생성
-  SnakeFirst(win); // 초기 snake 출력
-  while (1) {          //무한 반복
-    usleep(500000);    //0.5초 대기
-    press();           //방향키 입력
-    deletesnake(win); //이전 뱀 출력된거 삭제
-    Turn(win);         //머리 방향 초기화
-    move(win);         //머리 위치 이동
-    StateUpdate(win);
-    printsnake(win); //새로운 뱀 출력
-  }
 }
 
 // snake 초기화
-void SnakeInit(WINDOW *win){
+void SnakeInit(){
   snake.y = 10;   // 처음 위치 초기화
   snake.x = 10;
   snake.length = 3;   // 길이 초기화
@@ -133,7 +118,7 @@ void printsnake(WINDOW *win) {
 }
 
 //머리 방향 초기화
-void Turn(WINDOW *win){
+void Turn(){
   if (snake.ch == KEY_LEFT && snake.head != KEY_RIGHT) {
     snake.head = KEY_LEFT;
   }
@@ -149,7 +134,7 @@ void Turn(WINDOW *win){
 }
 
 // 상태 업데이트
-void StateUpdate(WINDOW *win){
+void StateUpdate(){
   vector <int> vec1;     //임시 1차원 벡터
   vec1.push_back(snake.y);
   vec1.push_back(snake.x);
@@ -188,7 +173,7 @@ void Map(WINDOW *win) {
 }
 
 //머리 위치 이동
-void move(WINDOW *win) {
+void move() {
     if (snake.head == KEY_LEFT) {
       snake.x--;
     }
@@ -209,24 +194,25 @@ void time() {
 
 int main(){
   WINDOW *win;
+
   OptionInit();
   TermInit();
   WinInit(win);
-  /*
-  wattron(win, COLOR_PAIR(1));
-  while(1){
-    while (true) {
-      press();
-      sleep(1);
-      head[1]++;
-      mvwprintw(win, snake.y, snake.x, "3");
-      wrefresh(win);
-    }
+
+  win = newwin(23, 23, 1, 1);
+  SnakeInit(win); // snake 초기화
+  Map(win); //맵 생성
+  SnakeFirst(win); // 초기 snake 출력
+  while (1) {          //무한 반복
+    usleep(500000);    //0.5초 대기
+    press();           //방향키 입력
+    deletesnake(win); //이전 뱀 출력된거 삭제
+    Turn(win);         //머리 방향 초기화
+    move(win);         //머리 위치 이동
+    StateUpdate(win);
+    printsnake(win); //새로운 뱀 출력
   }
-  wattroff(win, COLOR_PAIR(1));
-  */
   delwin(win);
   endwin();
-
   return 0;
 }
