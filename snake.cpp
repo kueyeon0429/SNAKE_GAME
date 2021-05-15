@@ -2,14 +2,13 @@
 #include <ncurses.h>
 #include <iostream>
 #include <ctime>
-#include "snake.h"
 #include <unistd.h> //sleep
 #include <termios.h> // kbhit()
 #include <sys/ioctl.h> // kbhit()
+#include <vector>
 //#include "kbhit.c"
-
-
 using namespace std;
+#include "snake.h"
 
 SNAKE snake;
 
@@ -17,7 +16,10 @@ void SnakeInit(WINDOW *win);
 void Map(WINDOW *win);
 void Turn(WINDOW *win);
 void move(WINDOW *win);
-
+void SnakeFirst(WINDOW *win);
+void StateUpdate(WINDOW *win);
+void deletesnake(WINDOW *win);
+void printsnake(WINDOW *win);
 
 int kbhit() {
     termios term;
@@ -71,17 +73,17 @@ void WinInit(WINDOW *win){
 
   SnakeInit(win); // snake 초기화
   Map(win); //맵 생성
-
-  wattron(win, COLOR_PAIR(1));
+  SnakeFirst(win); // 초기 snake 출력
   while (1) {          //무한 반복
     usleep(500000);    //0.5초 대기
     press();           //방향키 입력
+    deletesnake(win); //이전 뱀 출력된거 삭제
     Turn(win);         //머리 방향 초기화
-    move(win);         //머리 이동 및 이전 위치 삭제
-    mvwprintw(win, snake.y, snake.x, "3");  //머리 출력
+    move(win);         //머리 위치 이동
+    StateUpdate(win);
+    printsnake(win); //새로운 뱀 출력
     wrefresh(win);
   }
-  wattroff(win, COLOR_PAIR(1));
 }
 
 // snake 초기화
@@ -90,6 +92,45 @@ void SnakeInit(WINDOW *win){
   snake.x = 10;
   snake.length = 3;   // 길이 초기화
   snake.head = KEY_LEFT;   // 방향 초기화
+
+  //뱀의 시작 지점
+  vector <int> vec1;     //임시 1차원 벡터
+  vec1.push_back(snake.y);
+  vec1.push_back(snake.x);
+  snake.vec.push_back(vec1);
+  vec1[1]++;
+  snake.vec.push_back(vec1);
+  vec1[1]++;
+  snake.vec.push_back(vec1);
+}
+
+// 초기 snake 출력
+void SnakeFirst(WINDOW *win) {
+  wattron(win, COLOR_PAIR(1));
+  for (int i=0; i<snake.length; i++) {
+      mvwprintw(win, snake.vec[i][0], snake.vec[i][1], "3");
+  }
+  wattroff(win, COLOR_PAIR(1));
+  wrefresh(win);
+}
+
+// 뱀 임시 삭제
+void deletesnake(WINDOW *win) {
+  wattron(win, COLOR_PAIR(1));
+  for (int i=0; i<snake.length; i++) {
+    mvwprintw(win, snake.vec[i][0], snake.vec[i][1], "0");
+  }
+  wattroff(win, COLOR_PAIR(1));
+}
+
+// 뱀 출력
+void printsnake(WINDOW *win) {
+  wattron(win, COLOR_PAIR(1));
+  for (int i=0; i<snake.length; i++) {
+    mvwprintw(win, snake.vec[i][0], snake.vec[i][1], "3");
+  }
+  wattroff(win, COLOR_PAIR(1));
+  wrefresh(win);
 }
 
 //머리 방향 초기화
@@ -109,8 +150,12 @@ void Turn(WINDOW *win){
 }
 
 // 상태 업데이트
-void StateUpdate(int head, clock_t curr){
-
+void StateUpdate(WINDOW *win){
+  vector <int> vec1;     //임시 1차원 벡터
+  vec1.push_back(snake.y);
+  vec1.push_back(snake.x);
+  snake.vec.insert(snake.vec.begin(),vec1);
+  snake.vec.pop_back();
 }
 
 // 화면 출력
@@ -141,30 +186,24 @@ void Map(WINDOW *win) {
     }
   }
   wattroff(win, COLOR_PAIR(1));
-
-  //시작 지점에 머리 출력
-  wattron(win, COLOR_PAIR(1));
-  mvwprintw(win, 10, 10, "3");
-  wattroff(win, COLOR_PAIR(1));
-  wrefresh(win);
 }
 
-//머리 이동
+//머리 위치 이동
 void move(WINDOW *win) {
     if (snake.head == KEY_LEFT) {
-      mvwprintw(win, snake.y, snake.x, "0");
+      //mvwprintw(win, snake.y, snake.x, "0");
       snake.x--;
     }
     else if (snake.head == KEY_RIGHT) {
-      mvwprintw(win, snake.y, snake.x, "0");
+      //mvwprintw(win, snake.y, snake.x, "0");
       snake.x++;
     }
     else if (snake.head == KEY_UP) {
-      mvwprintw(win, snake.y, snake.x, "0");
+      //mvwprintw(win, snake.y, snake.x, "0");
       snake.y--;
     }
     else if (snake.head == KEY_DOWN) {
-      mvwprintw(win, snake.y, snake.x, "0");
+      //mvwprintw(win, snake.y, snake.x, "0");
       snake.y++;
     }
 }
