@@ -39,6 +39,7 @@ void OptionInit(){
   start_color();
   init_pair(1, COLOR_WHITE, COLOR_YELLOW);   // 팔레트1
   init_pair(2, COLOR_WHITE, COLOR_GREEN);    // 팔레트2
+  init_pair(3, COLOR_WHITE, COLOR_RED);
 }
 
 // 터미널 초기화
@@ -171,6 +172,22 @@ void fail(){
   }
 }
 
+void result_win(){
+  snake.res = newwin(23, 23, 1, 1);
+   // 맵 생성
+  wbkgd(snake.res, COLOR_PAIR(3));   // 맵 배경
+  keypad(stdscr, TRUE);   // 특수 키 입력 가능
+  curs_set(0);   // 커서 가림
+  wattron(snake.res, COLOR_PAIR(3));
+  if(snake.fail == false) mvwprintw(snake.res, 1, 1, "fail");
+  //else~ 성공으로 겜 끝난 경우는 또 따로
+  wattroff(snake.res, COLOR_PAIR(3));
+  wattron(snake.res, COLOR_PAIR(1));
+  wborder(snake.res, '*', '*', '*', '*', '*', '*', '*', '*');
+  wattroff(snake.res, COLOR_PAIR(1));
+  wrefresh(snake.res);
+}
+
 
 /****************main*******************/
 int main(){
@@ -191,7 +208,10 @@ int main(){
     fail();   // 실패 조건 판단
     printsnake(); //새로운 뱀 출력
   }
+
   delwin(snake.win);
+  result_win();
+  getch();
   endwin();
   return 0;
 }
