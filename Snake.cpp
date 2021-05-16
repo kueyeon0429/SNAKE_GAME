@@ -242,9 +242,9 @@ void InsertPoisonItem() {
     vec3.push_back(b);
   } while (snake.vec.end()!=find(snake.vec.begin(), snake.vec.end(), vec3) && snake.vecGrowthItem.end()!=find(snake.vecGrowthItem.begin(), snake.vecGrowthItem.end(), vec3));
   snake.vecPoisonItem.push_back(vec3);
-  wattron(snake.win, COLOR_PAIR(1));
+  wattron(snake.win, COLOR_PAIR(3));
   mvwprintw(snake.win, vec3[0], vec3[1], "6");
-  wattroff(snake.win, COLOR_PAIR(1));
+  wattroff(snake.win, COLOR_PAIR(3));
   wrefresh(snake.win);
 }
 
@@ -313,12 +313,45 @@ void DeleteGate(){
 }
 
 void GateOn(){
+  if(snake.vec1[0] == 1){  // 상
+    if(snake.x == snake.vec1[2] && snake.y == snake.vec1[1])  // 머리 == gate
+      if(snake.head == KEY_UP){
 
+      }
+  }
+  else if(snake.vec1[0] == 2){  // 좌
+    if(snake.x == snake.vec1[2] && snake.y == snake.vec1[1])
+      if(snake.head == KEY_LEFT){
 
+      }
+  }
+  else if(snake.vec1[0] == 3){  // 하
+    if(snake.x == snake.vec1[2] && snake.y == snake.vec1[1])
+      if(snake.head == KEY_DOWN){
+
+      }
+  }
+  else if(snake.vec1[0] == 4){  // 우
+    if(snake.x == snake.vec1[2] && snake.y == snake.vec1[1])
+      if(snake.head == KEY_RIGHT){
+
+      }
+  }
 }
 
 void GateOff(){
-
+  if(snake.vec2[0] == 1){  // 상
+    snake.head = KEY_DOWN;
+  }
+  else if(snake.vec2[0] == 2){  // 좌
+    snake.head = KEY_RIGHT;
+  }
+  else if(snake.vec2[0] == 3){  // 하
+    snake.head = KEY_UP;
+  }
+  else if(snake.vec2[0] == 4){  // 우
+    snake.head = KEY_LEFT;
+  }
 }
 
 
@@ -336,6 +369,8 @@ void fail(){
       break;
     }
   }
+  // 길이가 3 미만
+  if(snake.length < 3) snake.fail = false;
 }
 
 void result_win(){
