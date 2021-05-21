@@ -75,13 +75,15 @@ void ScoreWinInit(){
   wborder(score.sco_win, '|','|','-','-','+','+','+','+');
   mvwprintw(score.sco_win, 2, 2, "Score Board");
   mvwprintw(score.sco_win, 5, 2, "B: ");
-  mvwprintw(score.sco_win, 5, 5, "%d", score.B);
+  mvwprintw(score.sco_win, 5, 5, "%d", snake.length);
+  mvwprintw(score.sco_win, 5, 7, "/");
+  mvwprintw(score.sco_win, 5, 8, "%d", snake.Max);
   mvwprintw(score.sco_win, 7, 2, "+: ");
-  mvwprintw(score.sco_win, 7, 5, "%d", score.growth);
+  mvwprintw(score.sco_win, 7, 5, "%d", snake.growth);
   mvwprintw(score.sco_win, 9, 2, "-: ");
-  mvwprintw(score.sco_win, 9, 5, "%d", score.poison);
+  mvwprintw(score.sco_win, 9, 5, "%d", snake.poison);
   mvwprintw(score.sco_win, 11, 2, "G: ");
-  mvwprintw(score.sco_win, 11, 5, "%d", score.G);
+  mvwprintw(score.sco_win, 11, 5, "%d", snake.G);
   wattroff(score.sco_win, COLOR_PAIR(7));
   wrefresh(score.sco_win);
 
@@ -98,25 +100,25 @@ void MissionWinInit(){
   mvwprintw(mission.mis_win, 5, 2, "B: ");
   mvwprintw(mission.mis_win, 5, 5, "%d", mission.B);
   mvwprintw(mission.mis_win, 5, 7, "(");
-  if(mission.B_) mvwprintw(mission.mis_win, 5, 8, "O");
+  if(snake.length >= mission.B) mvwprintw(mission.mis_win, 5, 8, "O");
   mvwprintw(mission.mis_win, 5, 9, ")");
 
   mvwprintw(mission.mis_win, 7, 2, "+: ");
   mvwprintw(mission.mis_win, 7, 5, "%d", mission.growth);
   mvwprintw(mission.mis_win, 7, 7, "(");
-  if(mission.g_) mvwprintw(mission.mis_win, 7, 8, "O");
+  if(snake.growth >= mission.growth) mvwprintw(mission.mis_win, 7, 8, "O");
   mvwprintw(mission.mis_win, 7, 9, ")");
 
   mvwprintw(mission.mis_win, 9, 2, "-: ");
   mvwprintw(mission.mis_win, 9, 5, "%d", mission.poison);
   mvwprintw(mission.mis_win, 9, 7, "(");
-  if(mission.p_) mvwprintw(mission.mis_win, 9, 8, "O");
+  if(snake.poison >= mission.poison) mvwprintw(mission.mis_win, 9, 8, "O");
   mvwprintw(mission.mis_win, 9, 9, ")");
 
   mvwprintw(mission.mis_win, 11, 2, "G: ");
   mvwprintw(mission.mis_win, 11, 5, "%d", mission.G);
   mvwprintw(mission.mis_win, 11, 7, "(");
-  if(mission.G_) mvwprintw(mission.mis_win, 11, 8, "O");
+  if(snake.G >= mission.G) mvwprintw(mission.mis_win, 11, 8, "O");
   mvwprintw(mission.mis_win, 11, 9, ")");
 
   wattroff(mission.mis_win, COLOR_PAIR(7));
@@ -225,10 +227,11 @@ void StateUpdate(){
   snake.vec.insert(snake.vec.begin(),vec1);
   if(snake.vecGrowthItem.end()==find(snake.vecGrowthItem.begin(), snake.vecGrowthItem.end(), vec1)) {
     snake.vec.pop_back();  //길어지는 아이템을 먹지 못한 경우
-  } else snake.length++;   //아이템을 먹은 경우
+  } else { snake.length++; snake.growth++; }   //아이템을 먹은 경우
   if (snake.vecPoisonItem.end()!=find(snake.vecPoisonItem.begin(), snake.vecPoisonItem.end(), vec1)) {
     snake.vec.pop_back();  //짧아지는 아이템을 먹은 경우
     snake.length--;
+    snake.poison++;
   }
 }
 
@@ -431,6 +434,7 @@ void GateOn(){
       snake.y = snake.vec2[1];
     }
   }
+  snake.G++;
 }
 
 
@@ -454,16 +458,28 @@ void fail(){
   if(snake.length < 3) snake.fail = false;
 }
 
+// 성공 조건 판단
+void success(){
+  if(snake.length >= mission.B && snake.growth >= mission.growth && snake.poison >= mission.poison && snake.G >= mission.G) snake.success = true;
+}
+
 void result_win(){
   snake.res = newwin(snake.mapline+2, snake.mapline+2, 1, 1);
    // 맵 생성
-  wbkgd(snake.res, COLOR_PAIR(3));   // 맵 배경
-  keypad(stdscr, TRUE);   // 특수 키 입력 가능
-  curs_set(0);   // 커서 가림
-  wattron(snake.res, COLOR_PAIR(3));
-  if(snake.fail == false) mvwprintw(snake.res, 1, 1, "fail");
-  //else~ 성공으로 겜 끝난 경우는 또 따로
-  wattroff(snake.res, COLOR_PAIR(3));
+   keypad(stdscr, TRUE);   // 특수 키 입력 가능
+   curs_set(0);   // 커서 가림
+  if(snake.fail == false){
+    wbkgd(snake.res, COLOR_PAIR(3));   // 맵 배경
+    wattron(snake.res, COLOR_PAIR(3));
+    mvwprintw(snake.res, 1, 1, "fail");
+    wattroff(snake.res, COLOR_PAIR(3));
+  }
+  else if(snake.success == true){
+    wbkgd(snake.res, COLOR_PAIR(4));
+    wattron(snake.res, COLOR_PAIR(4));
+    mvwprintw(snake.res, 1, 1, "success");
+    wattroff(snake.res, COLOR_PAIR(4));
+  }
   wattron(snake.res, COLOR_PAIR(1));
   wborder(snake.res, '*', '*', '*', '*', '*', '*', '*', '*');
   wattroff(snake.res, COLOR_PAIR(1));
@@ -486,15 +502,18 @@ int main(){
   SnakeInit(); // snake 초기화
 
   InsertGate();
-  while(snake.fail) {          //무한 반복
+  while(snake.fail&&snake.success!=true) {          //무한 반복
     usleep(100000);    //0.5초 대기
     a = press();           //방향키 입력
-    deletesnake(); //이전 뱀 출력된거 삭제
+    deletesnake(); //x이전 뱀 출력된거 삭제
     Turn(a);         //머리 방향 초기화
     move();         //머리 위치 이동
     if(snake.x == snake.vec1[2] && snake.y == snake.vec1[1]) GateOn();
     StateUpdate();
+    ScoreWinInit();
+    MissionWinInit();
     fail();   // 실패 조건 판단
+    success();  // 성공 조건 판단
     printsnake(); //새로운 뱀 출력
     if ((1.0)*(clock()-snake.InsertGrowthItemTime)>4000) InsertGrowthItem();   //4초인거같지만 2초마다 생성
     if (snake.vecGrowthItem.size()>3) DeleteGrowthItem();                     //아이템의 지속시간은 6초

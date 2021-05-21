@@ -7,6 +7,7 @@ typedef struct SNAKE {
   clock_t standTime;   // 기준 시간
   clock_t currTime;   // 현재 시간
   bool fail;  // 게임지속
+  bool success = false; // 겜 성공?
   WINDOW *win;   // 윈도우
   WINDOW *res;
   clock_t InsertGrowthItemTime;
@@ -20,4 +21,11 @@ typedef struct SNAKE {
   vector<vector<int>> vecPoisonItem; //짧아지는 아이템 모음
   vector<int> vec1;  //  진입: 4방향, y, x
   vector<int> vec2;  //  진출: 4방향, y, x
+  int gateCheck = 0; //임시변수
+  int mapline = 35;
+
+  int Max = 30;
+  int growth = 0;
+  int poison = 0;
+  int G = 0;
 } SNAKE;
