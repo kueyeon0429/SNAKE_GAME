@@ -11,8 +11,12 @@
 //#include "kbhit.c"
 using namespace std;
 #include "Snake.h"
+#include "ScoreBoard.h"
+#include "Mission.h"
 
 SNAKE snake;
+SCORE_BOARD score;
+MISSION mission;
 
 void SnakeInit(WINDOW *win);
 void Map(WINDOW *win);
@@ -50,15 +54,76 @@ void OptionInit(){
   init_pair(4, COLOR_WHITE, COLOR_BLUE);    // growth
   init_pair(5, COLOR_WHITE, COLOR_GREEN);    // gate on
   init_pair(6, COLOR_BLACK, COLOR_GREEN); // gate off
+  init_pair(7, COLOR_WHITE, COLOR_BLACK);    // 팔레트2
 }
 
 // 터미널 초기화
 void TermInit(){
-  resize_term(50, 50);
+  resize_term(39, 54);
   border('|', '|', '-', '-', '+', '+', '+', '+');   // 테두리
   refresh();   // 화면 출력
   noecho();   // 입력한 문자 가리기
   //getch();   // 문자 입력시 다음 이동
+}
+
+// 점수판 윈도우 초기화
+void ScoreWinInit(){
+  score.sco_win = newwin(14, 15, 1, 38);
+   // 맵 생성
+  curs_set(0);   // 커서 가림
+  wattron(score.sco_win, COLOR_PAIR(7));
+  wborder(score.sco_win, '|','|','-','-','+','+','+','+');
+  mvwprintw(score.sco_win, 2, 2, "Score Board");
+  mvwprintw(score.sco_win, 5, 2, "B: ");
+  mvwprintw(score.sco_win, 5, 5, "%d", snake.length);
+  mvwprintw(score.sco_win, 5, 7, "/");
+  mvwprintw(score.sco_win, 5, 8, "%d", snake.Max);
+  mvwprintw(score.sco_win, 7, 2, "+: ");
+  mvwprintw(score.sco_win, 7, 5, "%d", snake.growth);
+  mvwprintw(score.sco_win, 9, 2, "-: ");
+  mvwprintw(score.sco_win, 9, 5, "%d", snake.poison);
+  mvwprintw(score.sco_win, 11, 2, "G: ");
+  mvwprintw(score.sco_win, 11, 5, "%d", snake.G);
+  wattroff(score.sco_win, COLOR_PAIR(7));
+  wrefresh(score.sco_win);
+
+}
+
+// 미션 윈도우 초기화
+void MissionWinInit(){
+  mission.mis_win = newwin(14, 15, 15, 38);
+   // 맵 생성
+  curs_set(0);   // 커서 가림
+  wattron(mission.mis_win, COLOR_PAIR(7));
+  wborder(mission.mis_win, '|','|','-','-','+','+','+','+');
+  mvwprintw(mission.mis_win, 2, 2, "Mission");
+  mvwprintw(mission.mis_win, 5, 2, "B: ");
+  mvwprintw(mission.mis_win, 5, 5, "%d", mission.B);
+  mvwprintw(mission.mis_win, 5, 7, "(");
+  if(snake.length >= mission.B) mvwprintw(mission.mis_win, 5, 8, "O");
+  mvwprintw(mission.mis_win, 5, 9, ")");
+
+  mvwprintw(mission.mis_win, 7, 2, "+: ");
+  mvwprintw(mission.mis_win, 7, 5, "%d", mission.growth);
+  mvwprintw(mission.mis_win, 7, 7, "(");
+  if(snake.growth >= mission.growth) mvwprintw(mission.mis_win, 7, 8, "O");
+  mvwprintw(mission.mis_win, 7, 9, ")");
+
+  mvwprintw(mission.mis_win, 9, 2, "-: ");
+  mvwprintw(mission.mis_win, 9, 5, "%d", mission.poison);
+  mvwprintw(mission.mis_win, 9, 7, "(");
+  if(snake.poison >= mission.poison) mvwprintw(mission.mis_win, 9, 8, "O");
+  mvwprintw(mission.mis_win, 9, 9, ")");
+
+  mvwprintw(mission.mis_win, 11, 2, "G: ");
+  mvwprintw(mission.mis_win, 11, 5, "%d", mission.G);
+  mvwprintw(mission.mis_win, 11, 7, "(");
+  if(snake.G >= mission.G) mvwprintw(mission.mis_win, 11, 8, "O");
+  mvwprintw(mission.mis_win, 11, 9, ")");
+
+  wattroff(mission.mis_win, COLOR_PAIR(7));
+  wrefresh(mission.mis_win);
+
 }
 
 // 윈도우 초기화
@@ -155,16 +220,18 @@ void Turn(int a){
 // 상태 업데이트
 void StateUpdate(){
   //if(snake.x == snake.vec1[2] && snake.y == snake.vec1[1]) GateOn();
+
   vector <int> vec1;     //임시 1차원 벡터
   vec1.push_back(snake.y);
   vec1.push_back(snake.x);
   snake.vec.insert(snake.vec.begin(),vec1);
   if(snake.vecGrowthItem.end()==find(snake.vecGrowthItem.begin(), snake.vecGrowthItem.end(), vec1)) {
     snake.vec.pop_back();  //길어지는 아이템을 먹지 못한 경우
-  } else snake.length++;   //아이템을 먹은 경우
+  } else { snake.length++; snake.growth++; }   //아이템을 먹은 경우
   if (snake.vecPoisonItem.end()!=find(snake.vecPoisonItem.begin(), snake.vecPoisonItem.end(), vec1)) {
     snake.vec.pop_back();  //짧아지는 아이템을 먹은 경우
     snake.length--;
+    snake.poison++;
   }
 }
 
@@ -479,6 +546,7 @@ void GateOn(){
       }
     }
   }
+  snake.G++;
 }
 
 
@@ -500,6 +568,11 @@ void fail(){
   }
   // 길이가 3 미만
   if(snake.length < 3) snake.fail = false;
+}
+
+// 성공 조건 판단
+void success(){
+  if(snake.length >= mission.B && snake.growth >= mission.growth && snake.poison >= mission.poison && snake.G >= mission.G) snake.success = true;
 }
 
 void result_win(){
@@ -525,6 +598,8 @@ void result_win(){
 int main(){
   OptionInit();
   TermInit();
+  ScoreWinInit();
+  MissionWinInit();
   WinInit();
 
   bool t = true;
@@ -532,22 +607,25 @@ int main(){
   SnakeInit(); // snake 초기화
 
   InsertGate();
-  while(snake.fail) {          //무한 반복
+  while(snake.fail&&snake.success!=true) {          //무한 반복
     usleep(100000);    //0.5초 대기
     a = press();           //방향키 입력
-    deletesnake(); //이전 뱀 출력된거 삭제
+    deletesnake(); //x이전 뱀 출력된거 삭제
     Turn(a);         //머리 방향 초기화
     move();         //머리 위치 이동
     if(snake.x == snake.vec1[2] && snake.y == snake.vec1[1]) GateOn();
     StateUpdate();
+    ScoreWinInit();
+    MissionWinInit();
     fail();   // 실패 조건 판단
+    success();  // 성공 조건 판단
     printsnake(); //새로운 뱀 출력
     if ((1.0)*(clock()-snake.InsertGrowthItemTime)>4000) InsertGrowthItem();   //4초인거같지만 2초마다 생성
     if (snake.vecGrowthItem.size()>3) DeleteGrowthItem();                     //아이템의 지속시간은 6초
     if ((1.0)*(clock()-snake.InsertPoisonItemTime)>4000) InsertPoisonItem();
     if (snake.vecPoisonItem.size()>3) DeletePoisonItem();
     if ((1.0)*(clock()-snake.InsertGateTime)/1000.0>4) InsertGate();
-    if (snake.gateCheck == 1 && (1.0)*(clock()-snake.DeleteGateTime)> (400*snake.length)) DeleteGate();
+    if (snake.gateCheck == 1 && (1.0)*(clock()-snake.DeleteGateTime)> (300*snake.length)) DeleteGate();
   }
 
   delwin(snake.win);
