@@ -21,4 +21,5 @@ typedef struct SNAKE {
   vector<int> vec1;  //  진입: 4방향, y, x
   vector<int> vec2;  //  진출: 4방향, y, x
   int gateCheck = 0; //임시변수
+  int mapline = 35;
 } SNAKE;

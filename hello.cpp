@@ -63,7 +63,7 @@ void TermInit(){
 
 // 윈도우 초기화
 void WinInit(){
-  snake.win = newwin(23, 23, 1, 1);
+  snake.win = newwin(snake.mapline+2, snake.mapline+2, 1, 1);
    // 맵 생성
   wbkgd(snake.win, '0');   // 맵 배경
   keypad(stdscr, TRUE);   // 특수 키 입력 가능
@@ -210,8 +210,8 @@ void InsertGrowthItem() {
   do {
     vec2.pop_back();
     vec2.pop_back();
-    int a = rand() % 21 + 1;
-    int b = rand() % 21 + 1;
+    int a = rand() % snake.mapline + 1;
+    int b = rand() % snake.mapline + 1;
     vec2.push_back(a);
     vec2.push_back(b);
   } while (snake.vec.end()!=find(snake.vec.begin(), snake.vec.end(), vec2) || snake.vecPoisonItem.end()!=find(snake.vecPoisonItem.begin(), snake.vecPoisonItem.end(), vec2));
@@ -240,8 +240,8 @@ void InsertPoisonItem() {
   do {
     vec3.pop_back();
     vec3.pop_back();
-    int a = rand() % 21 + 1;
-    int b = rand() % 21 + 1;
+    int a = rand() % snake.mapline + 1;
+    int b = rand() % snake.mapline + 1;
     vec3.push_back(a);
     vec3.push_back(b);
   } while (snake.vec.end()!=find(snake.vec.begin(), snake.vec.end(), vec3) || snake.vecGrowthItem.end()!=find(snake.vecGrowthItem.begin(), snake.vecGrowthItem.end(), vec3));
@@ -282,38 +282,38 @@ void InsertGate(){
     snake.vec1.push_back(rand() % 4 + 1);
       if(snake.vec1[0] == 1){  // 상or하, y, 0
         snake.vec1.push_back(0);
-        snake.vec1.push_back(rand() % 21 + 1);
+        snake.vec1.push_back(rand() % (snake.mapline-2) + 2);
       }
       else if (snake.vec1[0] == 3) {
-        snake.vec1.push_back(22);
-        snake.vec1.push_back(rand() % 21 + 1);
+        snake.vec1.push_back(snake.mapline+1);
+        snake.vec1.push_back(rand() % (snake.mapline-2) + 2);
       }
       else if(snake.vec1[0] == 2 ){  // 좌or우, 0, x
-        snake.vec1.push_back(rand() % 21 + 1);
+        snake.vec1.push_back(rand() % (snake.mapline-2) + 2);
         snake.vec1.push_back(0);
       }
       else if(snake.vec1[0] == 4) {
-        snake.vec1.push_back(rand() % 21 + 1);
-        snake.vec1.push_back(22);
+        snake.vec1.push_back(rand() % (snake.mapline-2) + 2);
+        snake.vec1.push_back(snake.mapline+1);
       }
 
     // (y, x) -> v1(ran, 0) v2(ran, 0)
     snake.vec2.push_back(rand() % 4 + 1);
       if(snake.vec2[0] == 1){  // 상or하, y, 0
         snake.vec2.push_back(0);
-        snake.vec2.push_back(rand() % 21 + 1);
+        snake.vec2.push_back(rand() % (snake.mapline-2) + 2);
       }
       else if (snake.vec2[0] == 3) {
-        snake.vec2.push_back(22);
-        snake.vec2.push_back(rand() % 21 + 1);
+        snake.vec2.push_back(snake.mapline+1);
+        snake.vec2.push_back(rand() % (snake.mapline-2) + 2);
       }
       else if(snake.vec2[0] == 2 ){  // 좌or우, 0, x
-        snake.vec2.push_back(rand() % 21 + 1);
+        snake.vec2.push_back(rand() % (snake.mapline-2) + 2);
         snake.vec2.push_back(0);
       }
       else if(snake.vec2[0] == 4) {
-        snake.vec2.push_back(rand() % 21 + 1);
-        snake.vec2.push_back(22);
+        snake.vec2.push_back(rand() % (snake.mapline-2) + 2);
+        snake.vec2.push_back(snake.mapline+1);
       }
     if (snake.vec1 != snake.vec2) break;
   }
@@ -342,7 +342,7 @@ void DeleteGate(){
 void GateOn(){
   snake.gateCheck = 1;
   DeleteGateTime();
-  if(snake.vec1[0] == 1 || snake.vec1[0] == 2 || snake.vec1[0] == 3 || snake.vec1[0] == 4){  // 상
+  if(snake.vec1[0]){  // 상
     if(snake.vec2[0] == 1){
       //snake.ch == KEY_DOWN;
       snake.head = KEY_DOWN;
@@ -378,7 +378,7 @@ void GateOn(){
 // 실패 조건 판단
 void fail(){
   // wall에 닿는 경우
-  if(snake.x == 0 || snake.x == 22 || snake.y == 0 || snake.y == 22)
+  if(snake.x == 0 || snake.x == (snake.mapline+1) || snake.y == 0 || snake.y == (snake.mapline+1))
     if(snake.x != snake.vec1[2] || snake.y != snake.vec1[1]) snake.fail = false;
   // body에 닿는 경우
   for (int i=4; i < snake.length; i++){
@@ -392,7 +392,7 @@ void fail(){
 }
 
 void result_win(){
-  snake.res = newwin(23, 23, 1, 1);
+  snake.res = newwin(snake.mapline+2, snake.mapline+2, 1, 1);
    // 맵 생성
   wbkgd(snake.res, COLOR_PAIR(3));   // 맵 배경
   keypad(stdscr, TRUE);   // 특수 키 입력 가능
@@ -436,9 +436,7 @@ int main(){
     if ((1.0)*(clock()-snake.InsertPoisonItemTime)>4000) InsertPoisonItem();
     if (snake.vecPoisonItem.size()>3) DeletePoisonItem();
     if ((1.0)*(clock()-snake.InsertGateTime)/1000.0>4) InsertGate();
-    //if ((1.0)*(clock()-snake.DeleteGateTime)/1000.0>20) DeleteGate();
-    if (snake.gateCheck == 1 && (1.0)*(clock()-snake.DeleteGateTime)> (500*snake.length)) DeleteGate();
-    //if ((snake.vec[snake.vec.size()-1][0]) == (snake.vec2[1]) && (snake.vec[snake.vec.size()-1][1]) == (snake.vec2[2])) DeleteGate();
+    if (snake.gateCheck == 1 && (1.0)*(clock()-snake.DeleteGateTime)> (300*snake.length)) DeleteGate();
   }
 
   delwin(snake.win);
