@@ -333,114 +333,26 @@ void DeleteGate(){
 }
 
 void GateOn(){
-  if(snake.vec1[0] == 1){  // 상
+  if(snake.vec1[0] == 1  || snake.vec1[0] == 2  || snake.vec1[0] == 3 || snake.vec1[0] == 4){  // 상
     if(snake.head == KEY_UP){
       if(snake.vec2[0] == 1){
-        //snake.ch == KEY_DOWN;
         snake.head = KEY_DOWN;
         snake.x = snake.vec2[2];
-        snake.y = snake.vec2[1];
+        snake.y = snake.vec2[1]+1;
       }
       if(snake.vec2[0] == 2){
-        //snake.ch == KEY_RIGHT;
         snake.head = KEY_RIGHT;
-        snake.x = snake.vec2[2];
+        snake.x = snake.vec2[2]+1;
         snake.y = snake.vec2[1];
       }
       if(snake.vec2[0] == 3){
-        //snake.ch == KEY_UP;
         snake.head = KEY_UP;
         snake.x = snake.vec2[2];
-        snake.y = snake.vec2[1];
+        snake.y = snake.vec2[1]-1;
       }
       if(snake.vec2[0] == 4){
-        //snake.ch == KEY_DOWN;
         snake.head = KEY_DOWN;
-        snake.x = snake.vec2[2];
-        snake.y = snake.vec2[1];
-      }
-    }
-  }
-  else if(snake.vec1[0] == 2){  // 좌
-    if(snake.head == KEY_LEFT){
-      if(snake.vec2[0] == 1){
-        //snake.ch == KEY_DOWN;
-        snake.head = KEY_DOWN;
-        snake.x = snake.vec2[2];
-        snake.y = snake.vec2[1];
-      }
-      if(snake.vec2[0] == 2){
-        //snake.ch == KEY_RIGHT;
-        snake.head = KEY_RIGHT;
-        snake.x = snake.vec2[2];
-        snake.y = snake.vec2[1];
-      }
-      if(snake.vec2[0] == 3){
-        //snake.ch == KEY_UP;
-        snake.head = KEY_UP;
-        snake.x = snake.vec2[2];
-        snake.y = snake.vec2[1];
-      }
-      if(snake.vec2[0] == 4){
-        //snake.ch == KEY_LEFT;
-        snake.head = KEY_LEFT;
-        snake.x = snake.vec2[2];
-        snake.y = snake.vec2[1];
-      }
-    }
-  }
-  else if(snake.vec1[0] == 3){  // 하
-    if(snake.head == KEY_DOWN){
-      if(snake.vec2[0] == 1){
-        //snake.ch == KEY_DOWN;
-        snake.head = KEY_DOWN;
-        snake.x = snake.vec2[2];
-        snake.y = snake.vec2[1];
-      }
-      if(snake.vec2[0] == 2){
-        //snake.ch == KEY_RIGHT;
-        snake.head = KEY_RIGHT;
-        snake.x = snake.vec2[2];
-        snake.y = snake.vec2[1];
-      }
-      if(snake.vec2[0] == 3){
-        //snake.ch == KEY_UP;
-        snake.head = KEY_UP;
-        snake.x = snake.vec2[2];
-        snake.y = snake.vec2[1];
-      }
-      if(snake.vec2[0] == 4){
-        //snake.ch == KEY_LEFT;
-        snake.head = KEY_LEFT;
-        snake.x = snake.vec2[2];
-        snake.y = snake.vec2[1];
-      }
-    }
-  }
-  else if(snake.vec1[0] == 4){  // 우
-    if(snake.head == KEY_RIGHT){
-      if(snake.vec2[0] == 1){
-        //snake.ch == KEY_DOWN;
-        snake.head = KEY_DOWN;
-        snake.x = snake.vec2[2];
-        snake.y = snake.vec2[1];
-      }
-      if(snake.vec2[0] == 2){
-        //snake.ch == KEY_RIGHT;
-        snake.head = KEY_RIGHT;
-        snake.x = snake.vec2[2];
-        snake.y = snake.vec2[1];
-      }
-      if(snake.vec2[0] == 3){
-        //snake.ch == KEY_UP;
-        snake.head = KEY_UP;
-        snake.x = snake.vec2[2];
-        snake.y = snake.vec2[1];
-      }
-      if(snake.vec2[0] == 4){
-        //snake.ch == KEY_LEFT;
-        snake.head = KEY_LEFT;
-        snake.x = snake.vec2[2];
+        snake.x = snake.vec2[2]-1;
         snake.y = snake.vec2[1];
       }
     }
@@ -500,22 +412,31 @@ int main(){
   DeleteGrowthItemTime();
   InsertPoisonItemTime();
   DeletePoisonItemTime();
+  InsertGate();
   while(snake.fail) {          //무한 반복
     usleep(100000);    //0.5초 대기
     int a = press();           //방향키 입력
     deletesnake(); //이전 뱀 출력된거 삭제
     Turn(a);         //머리 방향 초기화
     move();         //머리 위치 이동
+    if(snake.x == snake.vec1[2] && snake.y == snake.vec1[1]) GateOn();
     StateUpdate();
     fail();   // 실패 조건 판단
     printsnake(); //새로운 뱀 출력
-    if ((1.0)*(clock()-snake.InsertGrowthItemTime)>2000) InsertGrowthItem();
-    if ((1.0)*(clock()-snake.DeleteGrowthItemTime)>4000) DeleteGrowthItem();
+    if ((1.0)*(clock()-snake.InsertGrowthItemTime)>4000) InsertGrowthItem();
+    if (snake.vecGrowthItem.size()>3) DeleteGrowthItem();
     if ((1.0)*(clock()-snake.InsertPoisonItemTime)>1000) InsertPoisonItem();
-    if ((1.0)*(clock()-snake.DeletePoisonItemTime)>4000) DeletePoisonItem();
+    if (snake.vecPoisonItem.size()>3) DeletePoisonItem();
+
     if ((1.0)*(clock()-snake.InsertGateTime)/1000.0>4) InsertGate();
     if ((1.0)*(clock()-snake.DeleteGateTime)/1000.0>20) DeleteGate();
-    if(snake.x == snake.vec1[2] && snake.y == snake.vec1[1]) GateOn();
+    //if(snake.vec[snake.length-1][0] == snake.vec2[1] && snake.vec[snake.length-1][1] == snake.vec2[2]){
+      //DeleteGate();
+      //if(snake.vec1[0] == 1) if(snake.head == KEY_UP) DeleteGate();
+      //else if(snake.vec1[0] == 2) if(snake.head == KEY_LEFT) DeleteGate();
+      //else if(snake.vec1[0] == 3) if(snake.head == KEY_DOWN) DeleteGate();
+      //else if(snake.vec1[0] == 4) if(snake.head == KEY_RIGHT) DeleteGate();
+    //}
   }
 
   delwin(snake.win);
