@@ -47,7 +47,8 @@ void OptionInit(){
   init_pair(2, COLOR_BLACK, COLOR_WHITE);    // 팔레트2
   init_pair(3, COLOR_WHITE, COLOR_RED);  // fail!, poison
   init_pair(4, COLOR_WHITE, COLOR_BLUE);    // growth
-  init_pair(5, COLOR_WHITE, COLOR_GREEN);    // gate
+  init_pair(5, COLOR_WHITE, COLOR_GREEN);    // gate on
+  init_pair(6, COLOR_BLACK, COLOR_GREEN); // gate off
 }
 
 // 터미널 초기화
@@ -298,11 +299,14 @@ void InsertGate(){
 
   wattron(snake.win, COLOR_PAIR(5));
   mvwprintw(snake.win, snake.vec1[1], snake.vec1[2], "7");
-  mvwprintw(snake.win, snake.vec2[1], snake.vec2[2], "7");
   wattroff(snake.win, COLOR_PAIR(5));
+  wattron(snake.win, COLOR_PAIR(6));
+  mvwprintw(snake.win, snake.vec2[1], snake.vec2[2], "7");
+  wattroff(snake.win, COLOR_PAIR(6));
   wrefresh(snake.win);
 }
 
+// 게이트 삭제
 void DeleteGate(){
   DeleteGateTime();
   wattron(snake.win, COLOR_PAIR(2));
@@ -310,32 +314,106 @@ void DeleteGate(){
   mvwprintw(snake.win, snake.vec2[1], snake.vec2[2], "0");
   wattroff(snake.win, COLOR_PAIR(2));
   wrefresh(snake.win);
+  snake.vec1.clear();
+  snake.vec2.clear();
 }
 
 void GateOn(){
   if(snake.vec1[0] == 1){  // 상
-    if(snake.x == snake.vec1[2] && snake.y == snake.vec1[1])  // 머리 == gate
-      if(snake.head == KEY_UP){
-
+    if(snake.head == KEY_UP){
+      if(snake.vec2[0] == 1){
+        snake.head = KEY_DOWN;
+        snake.x = snake.vec2[2];
+        snake.y = snake.vec2[1]-1;
       }
+      if(snake.vec2[0] == 2){
+        snake.head = KEY_RIGHT;
+        snake.x = snake.vec2[2]+1;
+        snake.y = snake.vec2[1];
+      }
+      if(snake.vec2[0] == 3){
+        snake.head = KEY_UP;
+        snake.x = snake.vec2[2];
+        snake.y = snake.vec2[1]+1;
+      }
+      if(snake.vec2[0] == 4){
+        snake.head = KEY_LEFT;
+        snake.x = snake.vec2[2]-1;
+        snake.y = snake.vec2[1];
+      }
+    }
   }
-  else if(snake.vec1[0] == 2){  // 좌
-    if(snake.x == snake.vec1[2] && snake.y == snake.vec1[1])
-      if(snake.head == KEY_LEFT){
-
+  else if(snake.vec1[0] == 2){  //
+    if(snake.head == KEY_LEFT){
+      if(snake.vec2[0] == 1){
+        snake.head = KEY_DOWN;
+        snake.x = snake.vec2[2];
+        snake.y = snake.vec2[1]-1;
       }
+      if(snake.vec2[0] == 2){
+        snake.head = KEY_RIGHT;
+        snake.x = snake.vec2[2]+1;
+        snake.y = snake.vec2[1];
+      }
+      if(snake.vec2[0] == 3){
+        snake.head = KEY_UP;
+        snake.x = snake.vec2[2];
+        snake.y = snake.vec2[1]+1;
+      }
+      if(snake.vec2[0] == 4){
+        snake.head = KEY_LEFT;
+        snake.x = snake.vec2[2]-1;
+        snake.y = snake.vec2[1];
+      }
+    }
   }
   else if(snake.vec1[0] == 3){  // 하
-    if(snake.x == snake.vec1[2] && snake.y == snake.vec1[1])
-      if(snake.head == KEY_DOWN){
-
+    if(snake.head == KEY_DOWN){
+      if(snake.vec2[0] == 1){
+        snake.head = KEY_DOWN;
+        snake.x = snake.vec2[2];
+        snake.y = snake.vec2[1]-1;
       }
+      if(snake.vec2[0] == 2){
+        snake.head = KEY_RIGHT;
+        snake.x = snake.vec2[2]+1;
+        snake.y = snake.vec2[1];
+      }
+      if(snake.vec2[0] == 3){
+        snake.head = KEY_UP;
+        snake.x = snake.vec2[2];
+        snake.y = snake.vec2[1]+1;
+      }
+      if(snake.vec2[0] == 4){
+        snake.head = KEY_LEFT;
+        snake.x = snake.vec2[2]-1;
+        snake.y = snake.vec2[1];
+      }
+    }
   }
   else if(snake.vec1[0] == 4){  // 우
-    if(snake.x == snake.vec1[2] && snake.y == snake.vec1[1])
-      if(snake.head == KEY_RIGHT){
-
+    if(snake.head == KEY_RIGHT){
+      if(snake.vec2[0] == 1){
+        snake.head = KEY_DOWN;
+        snake.x = snake.vec2[2];
+        snake.y = snake.vec2[1]-1;
       }
+      if(snake.vec2[0] == 2){
+        snake.head = KEY_RIGHT;
+        snake.x = snake.vec2[2]+1;
+        snake.y = snake.vec2[1];
+      }
+      if(snake.vec2[0] == 3){
+        snake.head = KEY_UP;
+        snake.x = snake.vec2[2];
+        snake.y = snake.vec2[1]+1;
+      }
+      if(snake.vec2[0] == 4){
+        snake.head = KEY_LEFT;
+        snake.x = snake.vec2[2]-1;
+        snake.y = snake.vec2[1];
+      }
+    }
   }
 }
 
@@ -361,7 +439,8 @@ void GateOff(){
 // 실패 조건 판단
 void fail(){
   // wall에 닿는 경우
-  if(snake.x == 0 || snake.x == 22 || snake.y == 0 || snake.y == 22) snake.fail = false;
+  if(snake.x == 0 || snake.x == 22 || snake.y == 0 || snake.y == 22)
+    if(snake.x != snake.vec1[2] || snake.y != snake.vec1[1]) snake.fail = false;
   // body에 닿는 경우
   for (int i=4; i < snake.length; i++){
     if(snake.y == snake.vec[i][0] && snake.x == snake.vec[i][1]){
@@ -419,7 +498,8 @@ int main(){
     if ((1.0)*(clock()-snake.InsertPoisonItemTime)>1000) InsertPoisonItem();
     if ((1.0)*(clock()-snake.DeletePoisonItemTime)>4000) DeletePoisonItem();
     if ((1.0)*(clock()-snake.InsertGateTime)/1000.0>4) InsertGate();
-    if ((1.0)*(clock()-snake.DeleteGateTime)/1000.0>10) DeleteGate();
+    if ((1.0)*(clock()-snake.DeleteGateTime)/1000.0>20) DeleteGate();
+    if(snake.x == snake.vec1[2] && snake.y == snake.vec1[1]) GateOn();
   }
 
   delwin(snake.win);
