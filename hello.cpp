@@ -81,7 +81,7 @@ void SnakeInit(){
   snake.y = 10;   // 처음 위치 초기화
   snake.x = 10;
   snake.length = 3;   // 길이 초기화
-  //snake.head = KEY_LEFT;   // 방향 초기화
+  snake.head = KEY_LEFT;   // 방향 초기화
 
   //뱀의 시작 지점
   vector <int> vec1;     //임시 1차원 벡터
@@ -214,7 +214,7 @@ void InsertGrowthItem() {
     int b = rand() % 21 + 1;
     vec2.push_back(a);
     vec2.push_back(b);
-  } while (snake.vec.end()!=find(snake.vec.begin(), snake.vec.end(), vec2) && snake.vecPoisonItem.end()!=find(snake.vecPoisonItem.begin(), snake.vecPoisonItem.end(), vec2));
+  } while (snake.vec.end()!=find(snake.vec.begin(), snake.vec.end(), vec2) || snake.vecPoisonItem.end()!=find(snake.vecPoisonItem.begin(), snake.vecPoisonItem.end(), vec2));
   snake.vecGrowthItem.push_back(vec2);
   wattron(snake.win, COLOR_PAIR(4));
   mvwprintw(snake.win, vec2[0], vec2[1], "5");
@@ -244,7 +244,7 @@ void InsertPoisonItem() {
     int b = rand() % 21 + 1;
     vec3.push_back(a);
     vec3.push_back(b);
-  } while (snake.vec.end()!=find(snake.vec.begin(), snake.vec.end(), vec3) && snake.vecGrowthItem.end()!=find(snake.vecGrowthItem.begin(), snake.vecGrowthItem.end(), vec3));
+  } while (snake.vec.end()!=find(snake.vec.begin(), snake.vec.end(), vec3) || snake.vecGrowthItem.end()!=find(snake.vecGrowthItem.begin(), snake.vecGrowthItem.end(), vec3));
   snake.vecPoisonItem.push_back(vec3);
   wattron(snake.win, COLOR_PAIR(3));
   mvwprintw(snake.win, vec3[0], vec3[1], "6");
@@ -276,44 +276,47 @@ void InsertGate(){
   InsertGateTime();
   srand(time(NULL));
 
-  // (y, x) -> v1(ran, 0) v2(ran, 0)
-  snake.vec1.push_back(rand() % 4 + 1);
-    if(snake.vec1[0] == 1){  // 상or하, y, 0
-      snake.vec1.push_back(0);
-      snake.vec1.push_back(rand() % 21 + 1);
-    }
-    else if (snake.vec1[0] == 3) {
-      snake.vec1.push_back(22);
-      snake.vec1.push_back(rand() % 21 + 1);
-    }
-    else if(snake.vec1[0] == 2 ){  // 좌or우, 0, x
-      snake.vec1.push_back(rand() % 21 + 1);
-      snake.vec1.push_back(0);
-    }
-    else if(snake.vec1[0] == 4) {
-      snake.vec1.push_back(rand() % 21 + 1);
-      snake.vec1.push_back(22);
-    }
 
   // (y, x) -> v1(ran, 0) v2(ran, 0)
-  snake.vec2.push_back(rand() % 4 + 1);
-    if(snake.vec2[0] == 1){  // 상or하, y, 0
-      snake.vec2.push_back(0);
-      snake.vec2.push_back(rand() % 21 + 1);
-    }
-    else if (snake.vec2[0] == 3) {
-      snake.vec2.push_back(22);
-      snake.vec2.push_back(rand() % 21 + 1);
-    }
-    else if(snake.vec2[0] == 2 ){  // 좌or우, 0, x
-      snake.vec2.push_back(rand() % 21 + 1);
-      snake.vec2.push_back(0);
-    }
-    else if(snake.vec2[0] == 4) {
-      snake.vec2.push_back(rand() % 21 + 1);
-      snake.vec2.push_back(22);
-    }
+  while (1) {
+    snake.vec1.push_back(rand() % 4 + 1);
+      if(snake.vec1[0] == 1){  // 상or하, y, 0
+        snake.vec1.push_back(0);
+        snake.vec1.push_back(rand() % 21 + 1);
+      }
+      else if (snake.vec1[0] == 3) {
+        snake.vec1.push_back(22);
+        snake.vec1.push_back(rand() % 21 + 1);
+      }
+      else if(snake.vec1[0] == 2 ){  // 좌or우, 0, x
+        snake.vec1.push_back(rand() % 21 + 1);
+        snake.vec1.push_back(0);
+      }
+      else if(snake.vec1[0] == 4) {
+        snake.vec1.push_back(rand() % 21 + 1);
+        snake.vec1.push_back(22);
+      }
 
+    // (y, x) -> v1(ran, 0) v2(ran, 0)
+    snake.vec2.push_back(rand() % 4 + 1);
+      if(snake.vec2[0] == 1){  // 상or하, y, 0
+        snake.vec2.push_back(0);
+        snake.vec2.push_back(rand() % 21 + 1);
+      }
+      else if (snake.vec2[0] == 3) {
+        snake.vec2.push_back(22);
+        snake.vec2.push_back(rand() % 21 + 1);
+      }
+      else if(snake.vec2[0] == 2 ){  // 좌or우, 0, x
+        snake.vec2.push_back(rand() % 21 + 1);
+        snake.vec2.push_back(0);
+      }
+      else if(snake.vec2[0] == 4) {
+        snake.vec2.push_back(rand() % 21 + 1);
+        snake.vec2.push_back(22);
+      }
+    if (snake.vec1 != snake.vec2) break;
+  }
   wattron(snake.win, COLOR_PAIR(5));
   mvwprintw(snake.win, snake.vec1[1], snake.vec1[2], "7");
   wattroff(snake.win, COLOR_PAIR(5));
@@ -325,7 +328,7 @@ void InsertGate(){
 
 // 게이트 삭제
 void DeleteGate(){
-  DeleteGateTime();
+  //DeleteGateTime();
   wattron(snake.win, COLOR_PAIR(2));
   mvwprintw(snake.win, snake.vec1[1], snake.vec1[2], "1");
   mvwprintw(snake.win, snake.vec2[1], snake.vec2[2], "1");
@@ -333,9 +336,12 @@ void DeleteGate(){
   wrefresh(snake.win);
   snake.vec1.clear();
   snake.vec2.clear();
+  snake.gateCheck = 0;
 }
 
 void GateOn(){
+  snake.gateCheck = 1;
+  DeleteGateTime();
   if(snake.vec1[0] == 1 || snake.vec1[0] == 2 || snake.vec1[0] == 3 || snake.vec1[0] == 4){  // 상
     if(snake.vec2[0] == 1){
       //snake.ch == KEY_DOWN;
@@ -357,7 +363,7 @@ void GateOn(){
     }
     if(snake.vec2[0] == 4){
       //snake.ch == KEY_DOWN;
-      snake.head = KEY_DOWN;
+      snake.head = KEY_LEFT;
       snake.x = snake.vec2[2]-1;
       snake.y = snake.vec2[1];
     }
@@ -411,16 +417,13 @@ int main(){
   WinInit();
 
   bool t = true;
-
+  int a;
   SnakeInit(); // snake 초기화
-  InsertGrowthItemTime();
-  DeleteGrowthItemTime();
-  InsertPoisonItemTime();
-  DeletePoisonItemTime();
+
   InsertGate();
   while(snake.fail) {          //무한 반복
     usleep(100000);    //0.5초 대기
-    int a = press();           //방향키 입력
+    a = press();           //방향키 입력
     deletesnake(); //이전 뱀 출력된거 삭제
     Turn(a);         //머리 방향 초기화
     move();         //머리 위치 이동
@@ -433,7 +436,8 @@ int main(){
     if ((1.0)*(clock()-snake.InsertPoisonItemTime)>4000) InsertPoisonItem();
     if (snake.vecPoisonItem.size()>3) DeletePoisonItem();
     if ((1.0)*(clock()-snake.InsertGateTime)/1000.0>4) InsertGate();
-    if ((1.0)*(clock()-snake.DeleteGateTime)/1000.0>20) DeleteGate();
+    //if ((1.0)*(clock()-snake.DeleteGateTime)/1000.0>20) DeleteGate();
+    if (snake.gateCheck == 1 && (1.0)*(clock()-snake.DeleteGateTime)> (500*snake.length)) DeleteGate();
     //if ((snake.vec[snake.vec.size()-1][0]) == (snake.vec2[1]) && (snake.vec[snake.vec.size()-1][1]) == (snake.vec2[2])) DeleteGate();
   }
 
