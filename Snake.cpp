@@ -129,24 +129,24 @@ void printsnake() {
 /*********************move************************/
 
 //방향키 받는 함수
-void press() {
+int press() {
   if (kbhit()) {
-    snake.ch = getch();
+    return getch();
   }
 }
 
 //머리 방향 초기화
-void Turn(){
-  if (snake.ch == KEY_LEFT && snake.head != KEY_RIGHT) {
+void Turn(int a){
+  if (a == KEY_LEFT && snake.head != KEY_RIGHT) {
     snake.head = KEY_LEFT;
   }
-  else if (snake.ch == KEY_RIGHT && snake.head != KEY_LEFT) {
+  else if (a == KEY_RIGHT && snake.head != KEY_LEFT) {
     snake.head = KEY_RIGHT;
   }
-  else if (snake.ch == KEY_UP && snake.head != KEY_DOWN) {
+  else if (a == KEY_UP && snake.head != KEY_DOWN) {
     snake.head = KEY_UP;
   }
-  else if (snake.ch == KEY_DOWN && snake.head != KEY_UP) {
+  else if (a == KEY_DOWN && snake.head != KEY_UP) {
     snake.head = KEY_DOWN;
   }
 }
@@ -275,27 +275,41 @@ void InsertGate(){
 
   // (y, x) -> v1(ran, 0) v2(ran, 0)
   snake.vec1.push_back(rand() % 4 + 1);
-  if(snake.vec1[0] == 1 || snake.vec1[0] == 3){  // 상or하, y, 0
-    snake.vec1.push_back(0);
-    snake.vec1.push_back(rand() % 21 + 1);
-  }
-  else if(snake.vec1[0] == 2 || snake.vec1[0] == 4){  // 좌or우, 0, x
-    snake.vec1.push_back(rand() % 21 + 1);
-    snake.vec1.push_back(0);
-  }
+    if(snake.vec1[0] == 1){  // 상or하, y, 0
+      snake.vec1.push_back(0);
+      snake.vec1.push_back(rand() % 21 + 1);
+    }
+    else if (snake.vec1[0] == 3) {
+      snake.vec1.push_back(22);
+      snake.vec1.push_back(rand() % 21 + 1);
+    }
+    else if(snake.vec1[0] == 2 ){  // 좌or우, 0, x
+      snake.vec1.push_back(rand() % 21 + 1);
+      snake.vec1.push_back(0);
+    }
+    else if(snake.vec1[0] == 4) {
+      snake.vec1.push_back(rand() % 21 + 1);
+      snake.vec1.push_back(22);
+    }
 
   // (y, x) -> v1(ran, 0) v2(ran, 0)
   snake.vec2.push_back(rand() % 4 + 1);
-  if(snake.vec2[0] == 1 || snake.vec2[0] == 3){  // 상or하, y, 0
-    snake.vec2.push_back(0);
-    // 같은벽 같은 위치 인거는 못해용ㅋ
-    snake.vec2.push_back(rand() % 21 + 1);
-  }
-  else if(snake.vec2[0] == 2 || snake.vec2[0] == 4){  // 좌or우, 0, x
-    // 같은벽 같은 위치 인거는 못해용ㅋ
-    snake.vec2.push_back(rand() % 21 + 1);
-    snake.vec2.push_back(0);
-  }
+    if(snake.vec2[0] == 1){  // 상or하, y, 0
+      snake.vec2.push_back(0);
+      snake.vec2.push_back(rand() % 21 + 1);
+    }
+    else if (snake.vec2[0] == 3) {
+      snake.vec2.push_back(22);
+      snake.vec2.push_back(rand() % 21 + 1);
+    }
+    else if(snake.vec2[0] == 2 ){  // 좌or우, 0, x
+      snake.vec2.push_back(rand() % 21 + 1);
+      snake.vec2.push_back(0);
+    }
+    else if(snake.vec2[0] == 4) {
+      snake.vec2.push_back(rand() % 21 + 1);
+      snake.vec2.push_back(22);
+    }
 
   wattron(snake.win, COLOR_PAIR(5));
   mvwprintw(snake.win, snake.vec1[1], snake.vec1[2], "7");
@@ -325,24 +339,24 @@ void GateOn(){
         //snake.ch == KEY_DOWN;
         snake.head = KEY_DOWN;
         snake.x = snake.vec2[2];
-        snake.y = snake.vec2[1]+1;
+        snake.y = snake.vec2[1];
       }
       if(snake.vec2[0] == 2){
         //snake.ch == KEY_RIGHT;
         snake.head = KEY_RIGHT;
-        snake.x = snake.vec2[2]+1;
+        snake.x = snake.vec2[2];
         snake.y = snake.vec2[1];
       }
       if(snake.vec2[0] == 3){
         //snake.ch == KEY_UP;
         snake.head = KEY_UP;
         snake.x = snake.vec2[2];
-        snake.y = snake.vec2[1]-1;
+        snake.y = snake.vec2[1];
       }
       if(snake.vec2[0] == 4){
         //snake.ch == KEY_DOWN;
         snake.head = KEY_DOWN;
-        snake.x = snake.vec2[2]-1;
+        snake.x = snake.vec2[2];
         snake.y = snake.vec2[1];
       }
     }
@@ -353,24 +367,24 @@ void GateOn(){
         //snake.ch == KEY_DOWN;
         snake.head = KEY_DOWN;
         snake.x = snake.vec2[2];
-        snake.y = snake.vec2[1]+1;
+        snake.y = snake.vec2[1];
       }
       if(snake.vec2[0] == 2){
         //snake.ch == KEY_RIGHT;
         snake.head = KEY_RIGHT;
-        snake.x = snake.vec2[2]+1;
+        snake.x = snake.vec2[2];
         snake.y = snake.vec2[1];
       }
       if(snake.vec2[0] == 3){
         //snake.ch == KEY_UP;
         snake.head = KEY_UP;
         snake.x = snake.vec2[2];
-        snake.y = snake.vec2[1]-1;
+        snake.y = snake.vec2[1];
       }
       if(snake.vec2[0] == 4){
         //snake.ch == KEY_LEFT;
         snake.head = KEY_LEFT;
-        snake.x = snake.vec2[2]-1;
+        snake.x = snake.vec2[2];
         snake.y = snake.vec2[1];
       }
     }
@@ -381,24 +395,24 @@ void GateOn(){
         //snake.ch == KEY_DOWN;
         snake.head = KEY_DOWN;
         snake.x = snake.vec2[2];
-        snake.y = snake.vec2[1]+1;
+        snake.y = snake.vec2[1];
       }
       if(snake.vec2[0] == 2){
         //snake.ch == KEY_RIGHT;
         snake.head = KEY_RIGHT;
-        snake.x = snake.vec2[2]+1;
+        snake.x = snake.vec2[2];
         snake.y = snake.vec2[1];
       }
       if(snake.vec2[0] == 3){
         //snake.ch == KEY_UP;
         snake.head = KEY_UP;
         snake.x = snake.vec2[2];
-        snake.y = snake.vec2[1]-1;
+        snake.y = snake.vec2[1];
       }
       if(snake.vec2[0] == 4){
         //snake.ch == KEY_LEFT;
         snake.head = KEY_LEFT;
-        snake.x = snake.vec2[2]-1;
+        snake.x = snake.vec2[2];
         snake.y = snake.vec2[1];
       }
     }
@@ -409,24 +423,24 @@ void GateOn(){
         //snake.ch == KEY_DOWN;
         snake.head = KEY_DOWN;
         snake.x = snake.vec2[2];
-        snake.y = snake.vec2[1]+1;
+        snake.y = snake.vec2[1];
       }
       if(snake.vec2[0] == 2){
         //snake.ch == KEY_RIGHT;
         snake.head = KEY_RIGHT;
-        snake.x = snake.vec2[2]+1;
+        snake.x = snake.vec2[2];
         snake.y = snake.vec2[1];
       }
       if(snake.vec2[0] == 3){
         //snake.ch == KEY_UP;
         snake.head = KEY_UP;
         snake.x = snake.vec2[2];
-        snake.y = snake.vec2[1]-1;
+        snake.y = snake.vec2[1];
       }
       if(snake.vec2[0] == 4){
         //snake.ch == KEY_LEFT;
         snake.head = KEY_LEFT;
-        snake.x = snake.vec2[2]-1;
+        snake.x = snake.vec2[2];
         snake.y = snake.vec2[1];
       }
     }
@@ -488,9 +502,9 @@ int main(){
   DeletePoisonItemTime();
   while(snake.fail) {          //무한 반복
     usleep(100000);    //0.5초 대기
-    press();           //방향키 입력
+    int a = press();           //방향키 입력
     deletesnake(); //이전 뱀 출력된거 삭제
-    Turn();         //머리 방향 초기화
+    Turn(a);         //머리 방향 초기화
     move();         //머리 위치 이동
     StateUpdate();
     fail();   // 실패 조건 판단
