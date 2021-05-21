@@ -322,45 +322,53 @@ void GateOn(){
   if(snake.vec1[0] == 1){  // 상
     if(snake.head == KEY_UP){
       if(snake.vec2[0] == 1){
+        //snake.ch == KEY_DOWN;
         snake.head = KEY_DOWN;
         snake.x = snake.vec2[2];
-        snake.y = snake.vec2[1]-1;
+        snake.y = snake.vec2[1]+1;
       }
       if(snake.vec2[0] == 2){
+        //snake.ch == KEY_RIGHT;
         snake.head = KEY_RIGHT;
         snake.x = snake.vec2[2]+1;
         snake.y = snake.vec2[1];
       }
       if(snake.vec2[0] == 3){
+        //snake.ch == KEY_UP;
         snake.head = KEY_UP;
         snake.x = snake.vec2[2];
-        snake.y = snake.vec2[1]+1;
+        snake.y = snake.vec2[1]-1;
       }
       if(snake.vec2[0] == 4){
-        snake.head = KEY_LEFT;
+        //snake.ch == KEY_DOWN;
+        snake.head = KEY_DOWN;
         snake.x = snake.vec2[2]-1;
         snake.y = snake.vec2[1];
       }
     }
   }
-  else if(snake.vec1[0] == 2){  //
+  else if(snake.vec1[0] == 2){  // 좌
     if(snake.head == KEY_LEFT){
       if(snake.vec2[0] == 1){
+        //snake.ch == KEY_DOWN;
         snake.head = KEY_DOWN;
         snake.x = snake.vec2[2];
-        snake.y = snake.vec2[1]-1;
+        snake.y = snake.vec2[1]+1;
       }
       if(snake.vec2[0] == 2){
+        //snake.ch == KEY_RIGHT;
         snake.head = KEY_RIGHT;
         snake.x = snake.vec2[2]+1;
         snake.y = snake.vec2[1];
       }
       if(snake.vec2[0] == 3){
+        //snake.ch == KEY_UP;
         snake.head = KEY_UP;
         snake.x = snake.vec2[2];
-        snake.y = snake.vec2[1]+1;
+        snake.y = snake.vec2[1]-1;
       }
       if(snake.vec2[0] == 4){
+        //snake.ch == KEY_LEFT;
         snake.head = KEY_LEFT;
         snake.x = snake.vec2[2]-1;
         snake.y = snake.vec2[1];
@@ -370,21 +378,25 @@ void GateOn(){
   else if(snake.vec1[0] == 3){  // 하
     if(snake.head == KEY_DOWN){
       if(snake.vec2[0] == 1){
+        //snake.ch == KEY_DOWN;
         snake.head = KEY_DOWN;
         snake.x = snake.vec2[2];
-        snake.y = snake.vec2[1]-1;
+        snake.y = snake.vec2[1]+1;
       }
       if(snake.vec2[0] == 2){
+        //snake.ch == KEY_RIGHT;
         snake.head = KEY_RIGHT;
         snake.x = snake.vec2[2]+1;
         snake.y = snake.vec2[1];
       }
       if(snake.vec2[0] == 3){
+        //snake.ch == KEY_UP;
         snake.head = KEY_UP;
         snake.x = snake.vec2[2];
-        snake.y = snake.vec2[1]+1;
+        snake.y = snake.vec2[1]-1;
       }
       if(snake.vec2[0] == 4){
+        //snake.ch == KEY_LEFT;
         snake.head = KEY_LEFT;
         snake.x = snake.vec2[2]-1;
         snake.y = snake.vec2[1];
@@ -394,21 +406,25 @@ void GateOn(){
   else if(snake.vec1[0] == 4){  // 우
     if(snake.head == KEY_RIGHT){
       if(snake.vec2[0] == 1){
+        //snake.ch == KEY_DOWN;
         snake.head = KEY_DOWN;
         snake.x = snake.vec2[2];
-        snake.y = snake.vec2[1]-1;
+        snake.y = snake.vec2[1]+1;
       }
       if(snake.vec2[0] == 2){
+        //snake.ch == KEY_RIGHT;
         snake.head = KEY_RIGHT;
         snake.x = snake.vec2[2]+1;
         snake.y = snake.vec2[1];
       }
       if(snake.vec2[0] == 3){
+        //snake.ch == KEY_UP;
         snake.head = KEY_UP;
         snake.x = snake.vec2[2];
-        snake.y = snake.vec2[1]+1;
+        snake.y = snake.vec2[1]-1;
       }
       if(snake.vec2[0] == 4){
+        //snake.ch == KEY_LEFT;
         snake.head = KEY_LEFT;
         snake.x = snake.vec2[2]-1;
         snake.y = snake.vec2[1];
@@ -417,20 +433,6 @@ void GateOn(){
   }
 }
 
-void GateOff(){
-  if(snake.vec2[0] == 1){  // 상
-    snake.head = KEY_DOWN;
-  }
-  else if(snake.vec2[0] == 2){  // 좌
-    snake.head = KEY_RIGHT;
-  }
-  else if(snake.vec2[0] == 3){  // 하
-    snake.head = KEY_UP;
-  }
-  else if(snake.vec2[0] == 4){  // 우
-    snake.head = KEY_LEFT;
-  }
-}
 
 
 
