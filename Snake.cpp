@@ -8,7 +8,6 @@
 #include <vector>
 #include <random>
 #include <algorithm>
-#include <cstring>
 //#include "kbhit.c"
 using namespace std;
 #include "Snake.h"
@@ -60,7 +59,7 @@ void OptionInit(){
 
 // 터미널 초기화
 void TermInit(){
-  resize_term(50, 70);
+  resize_term(39, 54);
   border('|', '|', '-', '-', '+', '+', '+', '+');   // 테두리
   refresh();   // 화면 출력
   noecho();   // 입력한 문자 가리기
@@ -69,20 +68,20 @@ void TermInit(){
 
 // 점수판 윈도우 초기화
 void ScoreWinInit(){
-  score.sco_win = newwin(13, 15, 1, 30);
+  score.sco_win = newwin(14, 15, 1, 38);
    // 맵 생성
   curs_set(0);   // 커서 가림
   wattron(score.sco_win, COLOR_PAIR(7));
   wborder(score.sco_win, '|','|','-','-','+','+','+','+');
   mvwprintw(score.sco_win, 2, 2, "Score Board");
-  mvwprintw(score.sco_win, 4, 2, "B: ");
-  mvwprintw(score.sco_win, 4, 5, "%d", score.B);
-  mvwprintw(score.sco_win, 6, 2, "+: ");
-  mvwprintw(score.sco_win, 6, 5, "%d", score.growth);
-  mvwprintw(score.sco_win, 8, 2, "-: ");
-  mvwprintw(score.sco_win, 8, 5, "%d", score.poison);
-  mvwprintw(score.sco_win, 10, 2, "G: ");
-  mvwprintw(score.sco_win, 10, 5, "%d", score.G);
+  mvwprintw(score.sco_win, 5, 2, "B: ");
+  mvwprintw(score.sco_win, 5, 5, "%d", score.B);
+  mvwprintw(score.sco_win, 7, 2, "+: ");
+  mvwprintw(score.sco_win, 7, 5, "%d", score.growth);
+  mvwprintw(score.sco_win, 9, 2, "-: ");
+  mvwprintw(score.sco_win, 9, 5, "%d", score.poison);
+  mvwprintw(score.sco_win, 11, 2, "G: ");
+  mvwprintw(score.sco_win, 11, 5, "%d", score.G);
   wattroff(score.sco_win, COLOR_PAIR(7));
   wrefresh(score.sco_win);
 
@@ -90,35 +89,35 @@ void ScoreWinInit(){
 
 // 미션 윈도우 초기화
 void MissionWinInit(){
-  mission.mis_win = newwin(13, 15, 32, 30);
+  mission.mis_win = newwin(14, 15, 15, 38);
    // 맵 생성
   curs_set(0);   // 커서 가림
   wattron(mission.mis_win, COLOR_PAIR(7));
   wborder(mission.mis_win, '|','|','-','-','+','+','+','+');
   mvwprintw(mission.mis_win, 2, 2, "Mission");
-  mvwprintw(mission.mis_win, 4, 2, "B: ");
-  mvwprintw(mission.mis_win, 4, 5, "%d", mission.B);
-  mvwprintw(mission.mis_win, 4, 7, "(");
-  if(mission.B_) mvwprintw(mission.mis_win, 4, 8, "O");
-  mvwprintw(mission.mis_win, 4, 9, ")");
+  mvwprintw(mission.mis_win, 5, 2, "B: ");
+  mvwprintw(mission.mis_win, 5, 5, "%d", mission.B);
+  mvwprintw(mission.mis_win, 5, 7, "(");
+  if(mission.B_) mvwprintw(mission.mis_win, 5, 8, "O");
+  mvwprintw(mission.mis_win, 5, 9, ")");
 
-  mvwprintw(mission.mis_win, 6, 2, "+: ");
-  mvwprintw(mission.mis_win, 6, 5, "%d", mission.growth);
-  mvwprintw(mission.mis_win, 6, 7, "(");
-  if(mission.g_) mvwprintw(mission.mis_win, 6, 8, "O");
-  mvwprintw(mission.mis_win, 6, 9, ")");
+  mvwprintw(mission.mis_win, 7, 2, "+: ");
+  mvwprintw(mission.mis_win, 7, 5, "%d", mission.growth);
+  mvwprintw(mission.mis_win, 7, 7, "(");
+  if(mission.g_) mvwprintw(mission.mis_win, 7, 8, "O");
+  mvwprintw(mission.mis_win, 7, 9, ")");
 
-  mvwprintw(mission.mis_win, 8, 2, "-: ");
-  mvwprintw(mission.mis_win, 8, 5, "%d", mission.poison);
-  mvwprintw(mission.mis_win, 8, 7, "(");
-  if(mission.p_) mvwprintw(mission.mis_win, 8, 8, "O");
-  mvwprintw(mission.mis_win, 8, 9, ")");
+  mvwprintw(mission.mis_win, 9, 2, "-: ");
+  mvwprintw(mission.mis_win, 9, 5, "%d", mission.poison);
+  mvwprintw(mission.mis_win, 9, 7, "(");
+  if(mission.p_) mvwprintw(mission.mis_win, 9, 8, "O");
+  mvwprintw(mission.mis_win, 9, 9, ")");
 
-  mvwprintw(mission.mis_win, 10, 2, "G: ");
-  mvwprintw(mission.mis_win, 10, 5, "%d", mission.G);
-  mvwprintw(mission.mis_win, 10, 7, "(");
-  if(mission.G_) mvwprintw(mission.mis_win, 10, 8, "O");
-  mvwprintw(mission.mis_win, 10, 9, ")");
+  mvwprintw(mission.mis_win, 11, 2, "G: ");
+  mvwprintw(mission.mis_win, 11, 5, "%d", mission.G);
+  mvwprintw(mission.mis_win, 11, 7, "(");
+  if(mission.G_) mvwprintw(mission.mis_win, 11, 8, "O");
+  mvwprintw(mission.mis_win, 11, 9, ")");
 
   wattroff(mission.mis_win, COLOR_PAIR(7));
   wrefresh(mission.mis_win);
@@ -127,7 +126,7 @@ void MissionWinInit(){
 
 // 윈도우 초기화
 void WinInit(){
-  snake.win = newwin(23, 23, 1, 1);
+  snake.win = newwin(snake.mapline+2, snake.mapline+2, 1, 1);
    // 맵 생성
   wbkgd(snake.win, '0');   // 맵 배경
   keypad(stdscr, TRUE);   // 특수 키 입력 가능
@@ -135,10 +134,9 @@ void WinInit(){
   wattron(snake.win, COLOR_PAIR(2));
   wborder(snake.win, '1','1','1','1','2','2','2','2');
   wattroff(snake.win, COLOR_PAIR(2));
-  //snake.head = KEY_LEFT;   // 방향 초기화
+  snake.head = KEY_LEFT;   // 방향 초기화
 
 }
-
 
 // snake 초기화
 void SnakeInit(){
@@ -275,8 +273,8 @@ void InsertGrowthItem() {
   do {
     vec2.pop_back();
     vec2.pop_back();
-    int a = rand() % 21 + 1;
-    int b = rand() % 21 + 1;
+    int a = rand() % snake.mapline + 1;
+    int b = rand() % snake.mapline + 1;
     vec2.push_back(a);
     vec2.push_back(b);
   } while (snake.vec.end()!=find(snake.vec.begin(), snake.vec.end(), vec2) || snake.vecPoisonItem.end()!=find(snake.vecPoisonItem.begin(), snake.vecPoisonItem.end(), vec2));
@@ -305,8 +303,8 @@ void InsertPoisonItem() {
   do {
     vec3.pop_back();
     vec3.pop_back();
-    int a = rand() % 21 + 1;
-    int b = rand() % 21 + 1;
+    int a = rand() % snake.mapline + 1;
+    int b = rand() % snake.mapline + 1;
     vec3.push_back(a);
     vec3.push_back(b);
   } while (snake.vec.end()!=find(snake.vec.begin(), snake.vec.end(), vec3) || snake.vecGrowthItem.end()!=find(snake.vecGrowthItem.begin(), snake.vecGrowthItem.end(), vec3));
@@ -347,38 +345,38 @@ void InsertGate(){
     snake.vec1.push_back(rand() % 4 + 1);
       if(snake.vec1[0] == 1){  // 상or하, y, 0
         snake.vec1.push_back(0);
-        snake.vec1.push_back(rand() % 19 + 2);
+        snake.vec1.push_back(rand() % (snake.mapline-2) + 2);
       }
       else if (snake.vec1[0] == 3) {
-        snake.vec1.push_back(22);
-        snake.vec1.push_back(rand() % 19 + 2);
+        snake.vec1.push_back(snake.mapline+1);
+        snake.vec1.push_back(rand() % (snake.mapline-2) + 2);
       }
       else if(snake.vec1[0] == 2 ){  // 좌or우, 0, x
-        snake.vec1.push_back(rand() % 19 + 2);
+        snake.vec1.push_back(rand() % (snake.mapline-2) + 2);
         snake.vec1.push_back(0);
       }
       else if(snake.vec1[0] == 4) {
-        snake.vec1.push_back(rand() % 19 + 2);
-        snake.vec1.push_back(22);
+        snake.vec1.push_back(rand() % (snake.mapline-2) + 2);
+        snake.vec1.push_back(snake.mapline+1);
       }
 
     // (y, x) -> v1(ran, 0) v2(ran, 0)
     snake.vec2.push_back(rand() % 4 + 1);
       if(snake.vec2[0] == 1){  // 상or하, y, 0
         snake.vec2.push_back(0);
-        snake.vec2.push_back(rand() % 19 + 2);
+        snake.vec2.push_back(rand() % (snake.mapline-2) + 2);
       }
       else if (snake.vec2[0] == 3) {
-        snake.vec2.push_back(22);
-        snake.vec2.push_back(rand() % 19 + 2);
+        snake.vec2.push_back(snake.mapline+1);
+        snake.vec2.push_back(rand() % (snake.mapline-2) + 2);
       }
       else if(snake.vec2[0] == 2 ){  // 좌or우, 0, x
-        snake.vec2.push_back(rand() % 19 + 2);
+        snake.vec2.push_back(rand() % (snake.mapline-2) + 2);
         snake.vec2.push_back(0);
       }
       else if(snake.vec2[0] == 4) {
-        snake.vec2.push_back(rand() % 19 + 2);
-        snake.vec2.push_back(22);
+        snake.vec2.push_back(rand() % (snake.mapline-2) + 2);
+        snake.vec2.push_back(snake.mapline+1);
       }
     if (snake.vec1 != snake.vec2) break;
   }
@@ -407,7 +405,7 @@ void DeleteGate(){
 void GateOn(){
   snake.gateCheck = 1;
   DeleteGateTime();
-  if(snake.vec1[0] == 1 || snake.vec1[0] == 2 || snake.vec1[0] == 3 || snake.vec1[0] == 4){  // 상
+  if(snake.vec1[0]){  // 상
     if(snake.vec2[0] == 1){
       //snake.ch == KEY_DOWN;
       snake.head = KEY_DOWN;
@@ -443,7 +441,7 @@ void GateOn(){
 // 실패 조건 판단
 void fail(){
   // wall에 닿는 경우
-  if(snake.x == 0 || snake.x == 22 || snake.y == 0 || snake.y == 22)
+  if(snake.x == 0 || snake.x == (snake.mapline+1) || snake.y == 0 || snake.y == (snake.mapline+1))
     if(snake.x != snake.vec1[2] || snake.y != snake.vec1[1]) snake.fail = false;
   // body에 닿는 경우
   for (int i=4; i < snake.length; i++){
@@ -457,7 +455,7 @@ void fail(){
 }
 
 void result_win(){
-  snake.res = newwin(23, 23, 1, 1);
+  snake.res = newwin(snake.mapline+2, snake.mapline+2, 1, 1);
    // 맵 생성
   wbkgd(snake.res, COLOR_PAIR(3));   // 맵 배경
   keypad(stdscr, TRUE);   // 특수 키 입력 가능
@@ -503,9 +501,7 @@ int main(){
     if ((1.0)*(clock()-snake.InsertPoisonItemTime)>4000) InsertPoisonItem();
     if (snake.vecPoisonItem.size()>3) DeletePoisonItem();
     if ((1.0)*(clock()-snake.InsertGateTime)/1000.0>4) InsertGate();
-    //if ((1.0)*(clock()-snake.DeleteGateTime)/1000.0>20) DeleteGate();
     if (snake.gateCheck == 1 && (1.0)*(clock()-snake.DeleteGateTime)> (300*snake.length)) DeleteGate();
-    //if ((snake.vec[snake.vec.size()-1][0]) == (snake.vec2[1]) && (snake.vec[snake.vec.size()-1][1]) == (snake.vec2[2])) DeleteGate();
   }
 
   delwin(snake.win);
