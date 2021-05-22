@@ -206,18 +206,28 @@ void Stage_4Init(SNAKE& snake){
   keypad(stdscr, TRUE);   // 특수 키 입력 가능
   curs_set(0);   // 커서 가림
   wattron(snake.win, COLOR_PAIR(2));
-  mvwprintw(snake.win, 18, 2, "111111111111111111111111111111111");
-  for(int i = 1; i < 34; i++) mvwprintw(snake.win, 1+i, 18, "1");
-  wborder(snake.win, '1','1','1','1','2','2','2','2');
-  wattroff(snake.win, COLOR_PAIR(2));
-  for (int i = 1; i < 34; i++) {
+  for (int i = 1; i < 17; i++) {
+    mvwprintw(snake.win, 1+i, 18, "1");
     vector <int> vec3 = {1+i, 18};
     snake.vecWall.push_back(vec3);
   }
-  for (int i = 1; i < 34; i++) {
+  for (int i = 18; i < 34; i++) {
+    mvwprintw(snake.win, 1+i, 18, "1");
+    vector <int> vec3 = {1+i, 18};
+    snake.vecWall.push_back(vec3);
+  }
+  for (int i = 1; i < 17; i++) {
+    mvwprintw(snake.win,18, i+1, "1");
     vector <int> vec3 = {18, i+1};
     snake.vecWall.push_back(vec3);
   }
+  for (int i = 18; i < 34; i++) {
+    mvwprintw(snake.win, 18, i+1, "1");
+    vector <int> vec3 = {18, i+1};
+    snake.vecWall.push_back(vec3);
+  }
+  wborder(snake.win, '1','1','1','1','2','2','2','2');
+  wattroff(snake.win, COLOR_PAIR(2));
 }
 
 
@@ -429,7 +439,8 @@ void InsertGate(SNAKE& snake){
   while (1) {
     snake.vec1.clear();
     snake.vec2.clear();
-    snake.vec1.push_back(rand() % 5 + 1);
+    if (snake.vecWall.size()>0) snake.vec1.push_back(rand() % 5 + 1);
+    else snake.vec1.push_back(rand() % 4 + 1);
       if(snake.vec1[0] == 1){  // 상or하, y, 0
         snake.vec1.push_back(0);
         snake.vec1.push_back(rand() % (snake.mapline-2) + 2);
@@ -447,16 +458,15 @@ void InsertGate(SNAKE& snake){
         snake.vec1.push_back(snake.mapline+1);
       }
       else if(snake.vec1[0] == 5) {
-        if (snake.vecWall.size()>0) {
-          vector <int> vec7;
-          vec7 = snake.vecWall[rand() % (snake.vecWall.size())];
-          snake.vec1.push_back(vec7[0]); //y좌표
-          snake.vec1.push_back(vec7[1]); //x좌표
-        }
+        vector <int> vec7;
+        vec7 = snake.vecWall[rand() % (snake.vecWall.size())];
+        snake.vec1.push_back(vec7[0]); //y좌표
+        snake.vec1.push_back(vec7[1]); //x좌표
       }
 
     // (y, x) -> v1(ran, 0) v2(ran, 0)
-    snake.vec2.push_back(rand() % 5 + 1);
+    if (snake.vecWall.size()>0) snake.vec2.push_back(rand() % 5 + 1);
+    else snake.vec2.push_back(rand() % 4 + 1);
       if(snake.vec2[0] == 1){  // 상or하, y, 0
         snake.vec2.push_back(0);
         snake.vec2.push_back(rand() % (snake.mapline-2) + 2);
@@ -474,12 +484,10 @@ void InsertGate(SNAKE& snake){
         snake.vec2.push_back(snake.mapline+1);
       }
       else if(snake.vec2[0] == 5) {
-        if (snake.vecWall.size()>0) {
-          vector <int> vec8;
-          vec8 = snake.vecWall[rand() % (snake.vecWall.size())];
-          snake.vec2.push_back(vec8[0]); //y좌표
-          snake.vec2.push_back(vec8[1]); //x좌표
-        }
+        vector <int> vec8;
+        vec8 = snake.vecWall[rand() % (snake.vecWall.size())];
+        snake.vec2.push_back(vec8[0]); //y좌표
+        snake.vec2.push_back(vec8[1]); //x좌표
       }
     if (snake.vec1 != snake.vec2) break;
   }
