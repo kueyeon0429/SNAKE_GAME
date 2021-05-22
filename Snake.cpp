@@ -142,10 +142,37 @@ void Stage_2Init(SNAKE& snake){
   keypad(stdscr, TRUE);   // 특수 키 입력 가능
   curs_set(0);   // 커서 가림
   wattron(snake.win, COLOR_PAIR(2));
-  mvwprintw(snake.res, 1, 1, "222222222222222222222");
+  mvwprintw(snake.win, 11, 10, "11111111111111111");
+  mvwprintw(snake.win, 26, 10, "11111111111111111");
   wborder(snake.win, '1','1','1','1','2','2','2','2');
   wattroff(snake.win, COLOR_PAIR(2));
 }
+
+void Stage_3Init(SNAKE& snake){
+  snake.win = newwin(snake.mapline+2, snake.mapline+2, 1, 1);
+   // 맵 생성
+  wbkgd(snake.win, '0');   // 맵 배경
+  keypad(stdscr, TRUE);   // 특수 키 입력 가능
+  curs_set(0);   // 커서 가림
+  wattron(snake.win, COLOR_PAIR(2));
+  for(int i = 0; i < 17; i++) mvwprintw(snake.win, 10+i, 10, "11111111111111111");
+  wborder(snake.win, '1','1','1','1','2','2','2','2');
+  wattroff(snake.win, COLOR_PAIR(2));
+}
+
+void Stage_4Init(SNAKE& snake){
+  snake.win = newwin(snake.mapline+2, snake.mapline+2, 1, 1);
+   // 맵 생성
+  wbkgd(snake.win, '0');   // 맵 배경
+  keypad(stdscr, TRUE);   // 특수 키 입력 가능
+  curs_set(0);   // 커서 가림
+  wattron(snake.win, COLOR_PAIR(2));
+  mvwprintw(snake.win, 18, 1, "11111111111111111111111111111111111");
+  for(int i = 0; i < 35; i++) mvwprintw(snake.win, 1+i, 19, "1");
+  wborder(snake.win, '1','1','1','1','2','2','2','2');
+  wattroff(snake.win, COLOR_PAIR(2));
+}
+
 
 
 /**************init2****************/
@@ -607,12 +634,14 @@ void result_win(SNAKE& snake){
 
 
 /**************************************************/
-int game(SNAKE snake){
+int game(SNAKE& snake){
   ScoreWinInit(snake);
   MissionWinInit(snake);
-  Stage_1Init(snake);
-  //if(snake == snake1) Stage_1Init(snake);
-  //else if(snake == snake2) Stage_2Init(snake);
+  //Stage_1Init(snake);
+  if(&snake == &snake1) Stage_1Init(snake);
+  else if(&snake == &snake2) Stage_2Init(snake);
+  else if(&snake == &snake3) Stage_3Init(snake);
+  else if(&snake == &snake4) Stage_4Init(snake);
   SnakeInit(snake); // snake 초기화
   InsertGate(snake);
   while(snake.fail&&snake.success) {          //무한 반복
