@@ -1,4 +1,3 @@
-
 #include <clocale>
 #include <ncurses.h>
 #include <iostream>
@@ -133,6 +132,14 @@ void MissionWinInit(SNAKE& snake){
   wattroff(mission.mis_win, COLOR_PAIR(7));
   wrefresh(mission.mis_win);
 
+}
+
+void MissionInit(){
+  srand(time(NULL));
+  mission.B = rand() % 8 + 8; // Current length
+  mission.growth = rand() % 8 + 5;
+  mission.poison = rand() % 4 + 3;
+  mission.G = rand() % 5 + 3;
 }
 
 /******************map*********************/
@@ -696,7 +703,7 @@ void result_win(SNAKE& snake){
 int game(SNAKE& snake){
   ScoreWinInit(snake);
   MissionWinInit(snake);
-  //Stage_1Init(snake);
+  MissionInit();
   if(&snake == &snake1) Stage_1Init(snake);
   else if(&snake == &snake2) Stage_2Init(snake);
   else if(&snake == &snake3) Stage_3Init(snake);
