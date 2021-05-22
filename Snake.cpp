@@ -14,18 +14,13 @@ using namespace std;
 #include "ScoreBoard.h"
 #include "Mission.h"
 
-SNAKE snake;
+SNAKE snake1;
+SNAKE snake2;
+SNAKE snake3;
+SNAKE snake4;
+
 SCORE_BOARD score;
 MISSION mission;
-
-void SnakeInit(WINDOW *win);
-void Map(WINDOW *win);
-void Turn();
-void move();
-void StateUpdate();
-void deletesnake(WINDOW *win);
-void printsnake(WINDOW *win);
-void GateOn();
 
 int kbhit() {
     termios term;
@@ -63,11 +58,12 @@ void TermInit(){
   border('|', '|', '-', '-', '+', '+', '+', '+');   // 테두리
   refresh();   // 화면 출력
   noecho();   // 입력한 문자 가리기
-  //getch();   // 문자 입력시 다음 이동
+  mvprintw(2, 2, "Hello world!");
+  getch();   // 문자 입력시 다음 이동
 }
 
 // 점수판 윈도우 초기화
-void ScoreWinInit(){
+void ScoreWinInit(SNAKE& snake){
   score.sco_win = newwin(14, 15, 1, 38);
    // 맵 생성
   curs_set(0);   // 커서 가림
@@ -90,7 +86,7 @@ void ScoreWinInit(){
 }
 
 // 미션 윈도우 초기화
-void MissionWinInit(){
+void MissionWinInit(SNAKE& snake){
   mission.mis_win = newwin(14, 15, 15, 38);
    // 맵 생성
   curs_set(0);   // 커서 가림
@@ -126,8 +122,9 @@ void MissionWinInit(){
 
 }
 
+/******************map*********************/
 // 윈도우 초기화
-void WinInit(){
+void Stage_1Init(SNAKE& snake){
   snake.win = newwin(snake.mapline+2, snake.mapline+2, 1, 1);
    // 맵 생성
   wbkgd(snake.win, '0');   // 맵 배경
@@ -136,17 +133,29 @@ void WinInit(){
   wattron(snake.win, COLOR_PAIR(2));
   wborder(snake.win, '1','1','1','1','2','2','2','2');
   wattroff(snake.win, COLOR_PAIR(2));
-  snake.head = KEY_LEFT;   // 방향 초기화
-
 }
 
+void Stage_2Init(SNAKE& snake){
+  snake.win = newwin(snake.mapline+2, snake.mapline+2, 1, 1);
+   // 맵 생성
+  wbkgd(snake.win, '0');   // 맵 배경
+  keypad(stdscr, TRUE);   // 특수 키 입력 가능
+  curs_set(0);   // 커서 가림
+  wattron(snake.win, COLOR_PAIR(2));
+  mvwprintw(snake.res, 1, 1, "222222222222222222222");
+  wborder(snake.win, '1','1','1','1','2','2','2','2');
+  wattroff(snake.win, COLOR_PAIR(2));
+}
+
+
+/**************init2****************/
+
 // snake 초기화
-void SnakeInit(){
-  snake.fail = true;
-  snake.y = 10;   // 처음 위치 초기화
-  snake.x = 10;
-  snake.length = 3;   // 길이 초기화
-  snake.head = KEY_LEFT;   // 방향 초기화
+void SnakeInit(SNAKE& snake){
+  //snake.y = 10;   // 처음 위치 초기화
+  //snake.x = 10;
+  //snake.length = 3;   // 길이 초기화
+  //snake.head = KEY_LEFT;   // 방향 초기화
 
   //뱀의 시작 지점
   vector <int> vec1;     //임시 1차원 벡터
@@ -173,14 +182,14 @@ void SnakeInit(){
 /*********************snake************************/
 
 // 뱀 임시 삭제
-void deletesnake() {
+void deletesnake(SNAKE& snake) {
   for (int i=0; i<snake.length; i++) {
     mvwprintw(snake.win, snake.vec[i][0], snake.vec[i][1], "0");
   }
 }
 
 // 뱀 출력
-void printsnake() {
+void printsnake(SNAKE& snake) {
   wattron(snake.win, COLOR_PAIR(1));
   mvwprintw(snake.win, snake.vec[0][0], snake.vec[0][1], "3");
   for (int i=1; i<snake.length; i++) {
@@ -202,7 +211,7 @@ int press() {
 }
 
 //머리 방향 초기화
-void Turn(int a){
+void Turn(int a, SNAKE& snake){
   if (a == KEY_LEFT && snake.head != KEY_RIGHT) {
     snake.head = KEY_LEFT;
   }
@@ -218,9 +227,8 @@ void Turn(int a){
 }
 
 // 상태 업데이트
-void StateUpdate(){
+void StateUpdate(SNAKE& snake){
   //if(snake.x == snake.vec1[2] && snake.y == snake.vec1[1]) GateOn();
-
   vector <int> vec1;     //임시 1차원 벡터
   vec1.push_back(snake.y);
   vec1.push_back(snake.x);
@@ -236,7 +244,7 @@ void StateUpdate(){
 }
 
 //머리 위치 이동
-void move() {
+void move(SNAKE& snake) {
     if (snake.head == KEY_LEFT) {
       snake.x--;
     }
@@ -255,22 +263,22 @@ void move() {
 
 /*********************item************************/
 
-void InsertGrowthItemTime() {
+void InsertGrowthItemTime(SNAKE& snake) {
   snake.InsertGrowthItemTime = clock();
 }
-void DeleteGrowthItemTime() {
+void DeleteGrowthItemTime(SNAKE& snake) {
   snake.DeleteGrowthItemTime = clock();
 }
-void InsertPoisonItemTime() {
+void InsertPoisonItemTime(SNAKE& snake) {
   snake.InsertPoisonItemTime = clock();
 }
-void DeletePoisonItemTime() {
+void DeletePoisonItemTime(SNAKE& snake) {
   snake.DeletePoisonItemTime = clock();
 }
 
 //먹으면 길어지는 아이템
-void InsertGrowthItem() {
-  InsertGrowthItemTime();
+void InsertGrowthItem(SNAKE& snake) {
+  InsertGrowthItemTime(snake);
   srand(time(NULL));
   vector <int> vec2 = {0, 0};  //임시 1차원 벡터
   do {
@@ -290,8 +298,8 @@ void InsertGrowthItem() {
 
 //아이템 삭제
 //길어지는 아이템 삭제
-void DeleteGrowthItem() {
-  DeleteGrowthItemTime();
+void DeleteGrowthItem(SNAKE& snake) {
+  DeleteGrowthItemTime(snake);
   mvwprintw(snake.win, snake.vecGrowthItem[0][0], snake.vecGrowthItem[0][1], "0");
   snake.vecGrowthItem.erase(snake.vecGrowthItem.begin());
   wrefresh(snake.win);
@@ -299,8 +307,8 @@ void DeleteGrowthItem() {
 
 
 //먹으면 짧아지는 아이템
-void InsertPoisonItem() {
-  InsertPoisonItemTime();
+void InsertPoisonItem(SNAKE& snake) {
+  InsertPoisonItemTime(snake);
   srand(time(NULL)+1000000);
   vector <int> vec3 = {0, 0};  //임시 1차원 벡터
   do {
@@ -319,8 +327,8 @@ void InsertPoisonItem() {
 }
 
 //짧아지는 아이템 삭제
-void DeletePoisonItem() {
-  DeletePoisonItemTime();
+void DeletePoisonItem(SNAKE& snake) {
+  DeletePoisonItemTime(snake);
   mvwprintw(snake.win, snake.vecPoisonItem[0][0], snake.vecPoisonItem[0][1], "0");
   snake.vecPoisonItem.erase(snake.vecPoisonItem.begin());
   wrefresh(snake.win);
@@ -330,22 +338,22 @@ void DeletePoisonItem() {
 
 /*********************gate************************/
 
-void InsertGateTime() {
+void InsertGateTime(SNAKE& snake) {
   snake.InsertGateTime = clock();
 }
 
-void DeleteGateTime() {
+void DeleteGateTime(SNAKE& snake) {
   snake.DeleteGateTime = clock();
 }
 
-void InsertGate(){
-  InsertGateTime();
+void InsertGate(SNAKE& snake){
+  InsertGateTime(snake);
   srand(time(NULL));
 
 
   // (y, x) -> v1(ran, 0) v2(ran, 0)
   while (1) {
-    snake.vec1.push_back(rand() % 4 + 1);
+    snake.vec1.push_back(rand() % 5 + 1);
       if(snake.vec1[0] == 1){  // 상or하, y, 0
         snake.vec1.push_back(0);
         snake.vec1.push_back(rand() % (snake.mapline-2) + 2);
@@ -362,9 +370,13 @@ void InsertGate(){
         snake.vec1.push_back(rand() % (snake.mapline-2) + 2);
         snake.vec1.push_back(snake.mapline+1);
       }
+      else if(snake.vec1[0] == 5) {
+        snake.vec1.push_back(rand() % (snake.mapline-2) + 2);
+        snake.vec1.push_back(rand() % (snake.mapline-2) + 2);
+      }
 
     // (y, x) -> v1(ran, 0) v2(ran, 0)
-    snake.vec2.push_back(rand() % 4 + 1);
+    snake.vec2.push_back(rand() % 5 + 1);
       if(snake.vec2[0] == 1){  // 상or하, y, 0
         snake.vec2.push_back(0);
         snake.vec2.push_back(rand() % (snake.mapline-2) + 2);
@@ -381,6 +393,10 @@ void InsertGate(){
         snake.vec2.push_back(rand() % (snake.mapline-2) + 2);
         snake.vec2.push_back(snake.mapline+1);
       }
+      else if(snake.vec2[0] == 5) {
+        snake.vec2.push_back(rand() % (snake.mapline-2) + 2);
+        snake.vec2.push_back(rand() % (snake.mapline-2) + 2);
+      }
     if (snake.vec1 != snake.vec2) break;
   }
   wattron(snake.win, COLOR_PAIR(5));
@@ -393,22 +409,32 @@ void InsertGate(){
 }
 
 // 게이트 삭제
-void DeleteGate(){
+void DeleteGate(SNAKE& snake){
   //DeleteGateTime();
-  wattron(snake.win, COLOR_PAIR(2));
-  mvwprintw(snake.win, snake.vec1[1], snake.vec1[2], "1");
-  mvwprintw(snake.win, snake.vec2[1], snake.vec2[2], "1");
-  wattroff(snake.win, COLOR_PAIR(2));
+  if (snake.vec1[0] == 5) {
+    mvwprintw(snake.win, snake.vec1[1], snake.vec1[2], "0");
+  } else {
+    wattron(snake.win, COLOR_PAIR(2));
+    mvwprintw(snake.win, snake.vec1[1], snake.vec1[2], "1");
+    wattroff(snake.win, COLOR_PAIR(2));
+  }
+  if (snake.vec2[0] == 5) {
+    mvwprintw(snake.win, snake.vec2[1], snake.vec2[2], "0");
+  } else {
+    wattron(snake.win, COLOR_PAIR(2));
+    mvwprintw(snake.win, snake.vec2[1], snake.vec2[2], "1");
+    wattroff(snake.win, COLOR_PAIR(2));
+  }
   wrefresh(snake.win);
   snake.vec1.clear();
   snake.vec2.clear();
   snake.gateCheck = 0;
 }
 
-void GateOn(){
+void GateOn(SNAKE& snake){
   snake.gateCheck = 1;
-  DeleteGateTime();
-  if(snake.vec1[0]){  // 상
+  DeleteGateTime(snake);
+  if(0 < snake.vec1[0] && snake.vec1[0] < 5){  // 상
     if(snake.vec2[0] == 1){
       //snake.ch == KEY_DOWN;
       snake.head = KEY_DOWN;
@@ -433,17 +459,109 @@ void GateOn(){
       snake.x = snake.vec2[2]-1;
       snake.y = snake.vec2[1];
     }
+    if(snake.vec2[0] == 5){ //게이트 출구가 모서리가 아닐때
+      vector <int> vecup = {snake.vec2[1]-1, snake.vec2[2]};
+      vector <int> vecdown = {snake.vec2[1]+1, snake.vec2[2]};
+      vector <int> vecleft = {snake.vec2[1], snake.vec2[2]-1};
+      vector <int> vecright = {snake.vec2[1], snake.vec2[2]+1};
+      if (snake.head == KEY_UP) { //전에 진행방향이 위쪽일때
+        if (snake.vecWall.end()==find(snake.vecWall.begin(), snake.vecWall.end(), vecup)) { //원래 진행방향에 벽이 없을때
+          snake.head = KEY_UP;
+          snake.x = snake.vec2[2];
+          snake.y = snake.vec2[1]-1;
+        }
+        else if (snake.vecWall.end()==find(snake.vecWall.begin(), snake.vecWall.end(), vecright)) { //시계방향에 벽이 없을때
+          snake.head = KEY_RIGHT;
+          snake.x = snake.vec2[2]+1;
+          snake.y = snake.vec2[1];
+        }
+        else if (snake.vecWall.end()==find(snake.vecWall.begin(), snake.vecWall.end(), vecleft)) { //반시계방향에 벽이 없을때
+          snake.head = KEY_LEFT;
+          snake.x = snake.vec2[2]-1;
+          snake.y = snake.vec2[1];
+        }
+        else {
+          snake.head = KEY_DOWN;
+          snake.x = snake.vec2[2];
+          snake.y = snake.vec2[1]+1;
+        }
+      }
+      else if (snake.head == KEY_DOWN) { //전에 진행방향이 아래쪽일때
+        if (snake.vecWall.end()==find(snake.vecWall.begin(), snake.vecWall.end(), vecdown)) { //원래 진행방향에 벽이 없을때
+          snake.head = KEY_DOWN;
+          snake.x = snake.vec2[2];
+          snake.y = snake.vec2[1]+1;
+        }
+        else if (snake.vecWall.end()==find(snake.vecWall.begin(), snake.vecWall.end(), vecleft)) { //시계방향에 벽이 없을때
+          snake.head = KEY_LEFT;
+          snake.x = snake.vec2[2]-1;
+          snake.y = snake.vec2[1];
+        }
+        else if (snake.vecWall.end()==find(snake.vecWall.begin(), snake.vecWall.end(), vecright)) { //반시계방향에 벽이 없을때
+          snake.head = KEY_RIGHT;
+          snake.x = snake.vec2[2]+1;
+          snake.y = snake.vec2[1];
+        }
+        else {
+          snake.head = KEY_UP;
+          snake.x = snake.vec2[2];
+          snake.y = snake.vec2[1]-1;
+        }
+      }
+      else if (snake.head == KEY_LEFT) { //전에 진행방향이 왼쪽일때
+        if (snake.vecWall.end()==find(snake.vecWall.begin(), snake.vecWall.end(), vecleft)) { //원래 진행방향에 벽이 없을때
+          snake.head = KEY_LEFT;
+          snake.x = snake.vec2[2]-1;
+          snake.y = snake.vec2[1];
+        }
+        else if (snake.vecWall.end()==find(snake.vecWall.begin(), snake.vecWall.end(), vecup)) { //시계방향에 벽이 없을때
+          snake.head = KEY_UP;
+          snake.x = snake.vec2[2];
+          snake.y = snake.vec2[1]-1;
+        }
+        else if (snake.vecWall.end()==find(snake.vecWall.begin(), snake.vecWall.end(), vecdown)) { //반시계방향에 벽이 없을때
+          snake.head = KEY_DOWN;
+          snake.x = snake.vec2[2];
+          snake.y = snake.vec2[1]+1;
+        }
+        else {
+          snake.head = KEY_RIGHT;
+          snake.x = snake.vec2[2]+1;
+          snake.y = snake.vec2[1];
+        }
+      }
+      else if (snake.head == KEY_RIGHT) { //전에 진행방향이 오른쪽일때
+        if (snake.vecWall.end()==find(snake.vecWall.begin(), snake.vecWall.end(), vecright)) { //원래 진행방향에 벽이 없을때
+          snake.head = KEY_RIGHT;
+          snake.x = snake.vec2[2]+1;
+          snake.y = snake.vec2[1];
+        }
+        else if (snake.vecWall.end()==find(snake.vecWall.begin(), snake.vecWall.end(), vecdown)) { //시계방향에 벽이 없을때
+          snake.head = KEY_DOWN;
+          snake.x = snake.vec2[2];
+          snake.y = snake.vec2[1]+1;
+        }
+        else if (snake.vecWall.end()==find(snake.vecWall.begin(), snake.vecWall.end(), vecup)) { //반시계방향에 벽이 없을때
+          snake.head = KEY_UP;
+          snake.x = snake.vec2[2];
+          snake.y = snake.vec2[1]-1;
+        }
+        else {
+          snake.head = KEY_LEFT;
+          snake.x = snake.vec2[2]-1;
+          snake.y = snake.vec2[1];
+        }
+      }
+    }
   }
   snake.G++;
 }
 
 
-
-
 /*********************result************************/
 
 // 실패 조건 판단
-void fail(){
+void fail(SNAKE& snake){
   // wall에 닿는 경우
   if(snake.x == 0 || snake.x == (snake.mapline+1) || snake.y == 0 || snake.y == (snake.mapline+1))
     if(snake.x != snake.vec1[2] || snake.y != snake.vec1[1]) snake.fail = false;
@@ -459,11 +577,11 @@ void fail(){
 }
 
 // 성공 조건 판단
-void success(){
-  if(snake.length >= mission.B && snake.growth >= mission.growth && snake.poison >= mission.poison && snake.G >= mission.G) snake.success = true;
+void success(SNAKE& snake){
+  if(snake.length >= mission.B && snake.growth >= mission.growth && snake.poison >= mission.poison && snake.G >= mission.G) snake.success = false;
 }
 
-void result_win(){
+void result_win(SNAKE& snake){
   snake.res = newwin(snake.mapline+2, snake.mapline+2, 1, 1);
    // 맵 생성
    keypad(stdscr, TRUE);   // 특수 키 입력 가능
@@ -474,7 +592,7 @@ void result_win(){
     mvwprintw(snake.res, 1, 1, "fail");
     wattroff(snake.res, COLOR_PAIR(3));
   }
-  else if(snake.success == true){
+  else if(snake.success == false){
     wbkgd(snake.res, COLOR_PAIR(4));
     wattron(snake.res, COLOR_PAIR(4));
     mvwprintw(snake.res, 1, 1, "success");
@@ -488,43 +606,53 @@ void result_win(){
 
 
 
+/**************************************************/
+int game(SNAKE snake){
+  ScoreWinInit(snake);
+  MissionWinInit(snake);
+  Stage_1Init(snake);
+  //if(snake == snake1) Stage_1Init(snake);
+  //else if(snake == snake2) Stage_2Init(snake);
+  SnakeInit(snake); // snake 초기화
+  InsertGate(snake);
+  while(snake.fail&&snake.success) {          //무한 반복
+    usleep(100000);    //0.5초 대기
+    int a = press();           //방향키 입력
+    deletesnake(snake); //x이전 뱀 출력된거 삭제
+    Turn(a, snake);         //머리 방향 초기화
+    move(snake);
+    if(snake.x == snake.vec1[2] && snake.y == snake.vec1[1]) GateOn(snake);
+    StateUpdate(snake);
+    ScoreWinInit(snake);
+    MissionWinInit(snake);
+    fail(snake);   // 실패 조건 판단
+    success(snake);  // 성공 조건 판단
+    printsnake(snake); //새로운 뱀 출력
+    if ((1.0)*(clock()-snake.InsertGrowthItemTime)>4000) InsertGrowthItem(snake);   //4초인거같지만 2초마다 생성
+    if (snake.vecGrowthItem.size()>3) DeleteGrowthItem(snake);                     //아이템의 지속시간은 6초
+    if ((1.0)*(clock()-snake.InsertPoisonItemTime)>4000) InsertPoisonItem(snake);
+    if (snake.vecPoisonItem.size()>3) DeletePoisonItem(snake);
+    if ((1.0)*(clock()-snake.InsertGateTime)/1000.0>4) InsertGate(snake);
+    if (snake.gateCheck == 1 && (1.0)*(clock()-snake.DeleteGateTime)> (300*snake.length)) DeleteGate(snake);
+  }
+
+  delwin(snake.win);
+  result_win(snake);
+}
 /*********************main************************/
 
 int main(){
   OptionInit();
   TermInit();
-  ScoreWinInit();
-  MissionWinInit();
-  WinInit();
-
-  bool t = true;
-  int a;
-  SnakeInit(); // snake 초기화
-
-  InsertGate();
-  while(snake.fail&&snake.success!=true) {          //무한 반복
-    usleep(100000);    //0.5초 대기
-    a = press();           //방향키 입력
-    deletesnake(); //x이전 뱀 출력된거 삭제
-    Turn(a);         //머리 방향 초기화
-    move();         //머리 위치 이동
-    if(snake.x == snake.vec1[2] && snake.y == snake.vec1[1]) GateOn();
-    StateUpdate();
-    ScoreWinInit();
-    MissionWinInit();
-    fail();   // 실패 조건 판단
-    success();  // 성공 조건 판단
-    printsnake(); //새로운 뱀 출력
-    if ((1.0)*(clock()-snake.InsertGrowthItemTime)>4000) InsertGrowthItem();   //4초인거같지만 2초마다 생성
-    if (snake.vecGrowthItem.size()>3) DeleteGrowthItem();                     //아이템의 지속시간은 6초
-    if ((1.0)*(clock()-snake.InsertPoisonItemTime)>4000) InsertPoisonItem();
-    if (snake.vecPoisonItem.size()>3) DeletePoisonItem();
-    if ((1.0)*(clock()-snake.InsertGateTime)/1000.0>4) InsertGate();
-    if (snake.gateCheck == 1 && (1.0)*(clock()-snake.DeleteGateTime)> (300*snake.length)) DeleteGate();
-  }
-
-  delwin(snake.win);
-  result_win();
+/*start*/
+  game(snake1);
+  getch();
+  game(snake2);
+  getch();
+  game(snake3);
+  getch();
+  game(snake4);
+/*finish*/
   getch();
   endwin();
   return 0;
