@@ -58,8 +58,11 @@ void TermInit(){
   border('|', '|', '-', '-', '+', '+', '+', '+');   // 테두리
   refresh();   // 화면 출력
   noecho();   // 입력한 문자 가리기
-  mvprintw(2, 2, "Hello world!");
-  getch();   // 문자 입력시 다음 이동
+  mvprintw(33, 41, "SNAKE----");
+  mvprintw(34, 41, "GAME-----");
+  mvprintw(35, 41, "20203065-");
+  mvprintw(36, 41, "20203107-");
+  //getch();   // 문자 입력시 다음 이동
 }
 
 // 점수판 윈도우 초기화
@@ -70,6 +73,7 @@ void ScoreWinInit(SNAKE& snake){
   wattron(score.sco_win, COLOR_PAIR(7));
   wborder(score.sco_win, '|','|','-','-','+','+','+','+');
   mvwprintw(score.sco_win, 2, 2, "Score Board");
+  mvwprintw(score.sco_win, 3, 2, "-----------");
   mvwprintw(score.sco_win, 5, 2, "B: ");
   mvwprintw(score.sco_win, 5, 5, "%d", snake.length);
   mvwprintw(score.sco_win, 5, 7, "/");
@@ -87,12 +91,13 @@ void ScoreWinInit(SNAKE& snake){
 
 // 미션 윈도우 초기화
 void MissionWinInit(SNAKE& snake){
-  mission.mis_win = newwin(14, 15, 15, 38);
+  mission.mis_win = newwin(17, 15, 15, 38);
    // 맵 생성
   curs_set(0);   // 커서 가림
   wattron(mission.mis_win, COLOR_PAIR(7));
   wborder(mission.mis_win, '|','|','-','-','+','+','+','+');
   mvwprintw(mission.mis_win, 2, 2, "Mission");
+  mvwprintw(mission.mis_win, 3, 2, "-----------");
   mvwprintw(mission.mis_win, 5, 2, "B: ");
   mvwprintw(mission.mis_win, 5, 5, "%d", mission.B);
   mvwprintw(mission.mis_win, 5, 7, "(");
@@ -116,6 +121,12 @@ void MissionWinInit(SNAKE& snake){
   mvwprintw(mission.mis_win, 11, 7, "(");
   if(snake.G >= mission.G) mvwprintw(mission.mis_win, 11, 8, "O");
   mvwprintw(mission.mis_win, 11, 9, ")");
+
+  mvwprintw(mission.mis_win, 13, 2, "-----------");
+  if(&snake == &snake1) mvwprintw(mission.mis_win, 14, 2, "stage 1");
+  else if(&snake == &snake2) mvwprintw(mission.mis_win, 14, 2, "stage 2");
+  else if(&snake == &snake3) mvwprintw(mission.mis_win, 14, 2, "stage 3");
+  else if(&snake == &snake4) mvwprintw(mission.mis_win, 14, 2, "stage 4");
 
   wattroff(mission.mis_win, COLOR_PAIR(7));
   wrefresh(mission.mis_win);
@@ -168,7 +179,7 @@ void Stage_4Init(SNAKE& snake){
   curs_set(0);   // 커서 가림
   wattron(snake.win, COLOR_PAIR(2));
   mvwprintw(snake.win, 18, 1, "11111111111111111111111111111111111");
-  for(int i = 0; i < 35; i++) mvwprintw(snake.win, 1+i, 19, "1");
+  for(int i = 0; i < 35; i++) mvwprintw(snake.win, 1+i, 18, "1");
   wborder(snake.win, '1','1','1','1','2','2','2','2');
   wattroff(snake.win, COLOR_PAIR(2));
 }
@@ -616,7 +627,7 @@ void result_win(SNAKE& snake){
   if(snake.fail == false){
     wbkgd(snake.res, COLOR_PAIR(3));   // 맵 배경
     wattron(snake.res, COLOR_PAIR(3));
-    mvwprintw(snake.res, 1, 1, "fail");
+    mvwprintw(snake.res, 1, 1, "_(:τ」∠)_");
     wattroff(snake.res, COLOR_PAIR(3));
   }
   else if(snake.success == false){
