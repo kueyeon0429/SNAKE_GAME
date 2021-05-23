@@ -326,7 +326,7 @@ void StateUpdate(SNAKE& snake){
   snake.vec.insert(snake.vec.begin(),vec1);
   if(snake.vecGrowthItem.end()==find(snake.vecGrowthItem.begin(), snake.vecGrowthItem.end(), vec1)) {
     snake.vec.pop_back();  //길어지는 아이템을 먹지 못한 경우
-  } else { snake.length++; snake.growth++; }   //아이템을 먹은 경우
+  } else {  snake.growth++; if (snake.length < snake.Max) snake.length++;}   //아이템을 먹은 경우
   if (snake.vecPoisonItem.end()!=find(snake.vecPoisonItem.begin(), snake.vecPoisonItem.end(), vec1)) {
     snake.vec.pop_back();  //짧아지는 아이템을 먹은 경우
     snake.length--;
