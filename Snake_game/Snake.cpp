@@ -13,14 +13,11 @@ using namespace std;
 #include "ScoreBoard.h"
 #include "Mission.h"
 
-
-// SNAKE 객체 생성, stage1~stage4
 SNAKE snake1;
 SNAKE snake2;
 SNAKE snake3;
 SNAKE snake4;
 
-// 점수판, 미션판 객체 생성
 SCORE_BOARD score;
 MISSION mission;
 
@@ -37,6 +34,7 @@ int kbhit() {
 }
 
 
+
 /*********************init************************/
 
 // 옵션 초기화
@@ -44,15 +42,17 @@ void OptionInit(){
   setlocale(LC_ALL, "");
   initscr();
   start_color();
-  init_pair(1, COLOR_WHITE, COLOR_YELLOW);  // body
-  init_pair(2, COLOR_BLACK, COLOR_WHITE);   // border
-  init_pair(3, COLOR_WHITE, COLOR_RED);     // fail
-  init_pair(4, COLOR_WHITE, COLOR_BLUE);    // success
-  init_pair(5, COLOR_WHITE, COLOR_GREEN);   // growth
-  init_pair(7, COLOR_WHITE, COLOR_BLACK);   // background
-  init_pair(8, COLOR_WHITE, COLOR_MAGENTA); // poison
-  init_pair(10, COLOR_RED, COLOR_BLACK);    // gate off
-  init_pair(11, COLOR_BLUE, COLOR_BLACK);   // gate on
+  init_pair(1, COLOR_WHITE, COLOR_YELLOW);   // 몸통ㅇ색
+  init_pair(2, COLOR_BLACK, COLOR_WHITE);    // 팔레트2
+  init_pair(3, COLOR_WHITE, COLOR_RED);  // fail!, poison
+  init_pair(4, COLOR_WHITE, COLOR_BLUE);    // growth
+  init_pair(5, COLOR_WHITE, COLOR_GREEN);    // gate on
+  //init_pair(6, COLOR_BLACK, COLOR_GREEN); // gate off
+  init_pair(7, COLOR_WHITE, COLOR_BLACK);    // 팔레트2
+  init_pair(8, COLOR_WHITE, COLOR_MAGENTA);  // 머리색
+  init_pair(9, COLOR_CYAN, COLOR_BLACK);    // 팔레트2
+  init_pair(10, COLOR_RED, COLOR_BLACK);    // gate on
+  init_pair(11, COLOR_BLUE, COLOR_BLACK);    // 팔레트2
 }
 
 // 터미널 초기화
@@ -135,14 +135,6 @@ void MissionWinInit(SNAKE& snake){
 
 }
 
-void MissionInit(){
-  srand(time(NULL));
-  mission.B = rand() % 8 + 8; // Current length
-  mission.growth = rand() % 8 + 5;
-  mission.poison = rand() % 4 + 3;
-  mission.G = rand() % 5 + 3;
-}
-
 /******************map*********************/
 // 윈도우 초기화
 void Stage_1Init(SNAKE& snake){
@@ -155,7 +147,6 @@ void Stage_1Init(SNAKE& snake){
   wborder(snake.win, ' ',' ',' ',' ',' ',' ',' ',' ');
   wattroff(snake.win, COLOR_PAIR(2));
 }
-
 
 void Stage_2Init(SNAKE& snake){
   snake.win = newwin(snake.mapline+2, snake.mapline+2, 1, 1);
@@ -185,6 +176,7 @@ void Stage_3Init(SNAKE& snake){
   keypad(stdscr, TRUE);   // 특수 키 입력 가능
   curs_set(0);   // 커서 가림
   wattron(snake.win, COLOR_PAIR(2));
+  //for(int i = 0; i < 17; i++) mvwprintw(snake.win, 10+i, 10, "11111111111111111");
   wborder(snake.win, ' ',' ',' ',' ',' ',' ',' ',' ');
 
   for (int i=0; i<15; i++) {
@@ -243,10 +235,15 @@ void Stage_4Init(SNAKE& snake){
 
 
 
-/*********************snake************************/
+/**************init2****************/
 
 // snake 초기화
 void SnakeInit(SNAKE& snake){
+  //snake.y = 10;   // 처음 위치 초기화
+  //snake.x = 10;
+  //snake.length = 3;   // 길이 초기화
+  //snake.head = KEY_LEFT;   // 방향 초기화
+
   //뱀의 시작 지점
   vector <int> vec1;     //임시 1차원 벡터
   vec1.push_back(snake.y);
@@ -268,6 +265,10 @@ void SnakeInit(SNAKE& snake){
   wattroff(snake.win, COLOR_PAIR(1));
   wrefresh(snake.win);
 }
+
+
+
+/*********************snake************************/
 
 // 뱀 임시 삭제
 void deletesnake(SNAKE& snake) {
@@ -322,6 +323,7 @@ void Turn(int a, SNAKE& snake){
 
 // 상태 업데이트
 void StateUpdate(SNAKE& snake){
+  //if(snake.x == snake.vec1[2] && snake.y == snake.vec1[1]) GateOn();
   vector <int> vec1;     //임시 1차원 벡터
   vec1.push_back(snake.y);
   vec1.push_back(snake.x);
@@ -369,7 +371,7 @@ void DeletePoisonItemTime(SNAKE& snake) {
   snake.DeletePoisonItemTime = clock();
 }
 
-// growth item
+//먹으면 길어지는 아이템
 void InsertGrowthItem(SNAKE& snake) {
   InsertGrowthItemTime(snake);
   srand(time(NULL));
@@ -389,7 +391,8 @@ void InsertGrowthItem(SNAKE& snake) {
   wrefresh(snake.win);
 }
 
-// growth item delete
+//아이템 삭제
+//길어지는 아이템 삭제
 void DeleteGrowthItem(SNAKE& snake) {
   DeleteGrowthItemTime(snake);
   mvwprintw(snake.win, snake.vecGrowthItem[0][0], snake.vecGrowthItem[0][1], ".");
@@ -398,7 +401,7 @@ void DeleteGrowthItem(SNAKE& snake) {
 }
 
 
-// poison item
+//먹으면 짧아지는 아이템
 void InsertPoisonItem(SNAKE& snake) {
   InsertPoisonItemTime(snake);
   srand(time(NULL)+1000000);
@@ -418,7 +421,7 @@ void InsertPoisonItem(SNAKE& snake) {
   wrefresh(snake.win);
 }
 
-// poison item delete
+//짧아지는 아이템 삭제
 void DeletePoisonItem(SNAKE& snake) {
   DeletePoisonItemTime(snake);
   mvwprintw(snake.win, snake.vecPoisonItem[0][0], snake.vecPoisonItem[0][1], ".");
@@ -442,7 +445,8 @@ void InsertGate(SNAKE& snake){
   InsertGateTime(snake);
   srand(time(NULL));
 
-  // gate 위치
+
+  // (y, x) -> v1(ran, 0) v2(ran, 0)
   while (1) {
     snake.vec1.clear();
     snake.vec2.clear();
@@ -471,7 +475,7 @@ void InsertGate(SNAKE& snake){
         snake.vec1.push_back(vec7[1]); //x좌표
       }
 
-
+    // (y, x) -> v1(ran, 0) v2(ran, 0)
     if (snake.vecWall.size()>0) snake.vec2.push_back(rand() % 5 + 1);
     else snake.vec2.push_back(rand() % 4 + 1);
       if(snake.vec2[0] == 1){  // 상or하, y, 0
@@ -524,7 +528,7 @@ void DeleteGate(SNAKE& snake){
 void GateOn(SNAKE& snake){
   snake.gateCheck = 1;
   DeleteGateTime(snake);
-  if(0 < snake.vec1[0] && snake.vec1[0] < 6){  // 상
+  if(snake.vec1[0]){  // 상
     if(snake.vec2[0] == 1){
       //snake.ch == KEY_DOWN;
       snake.head = KEY_DOWN;
@@ -700,12 +704,11 @@ void result_win(SNAKE& snake){
 
 
 
-/**********************game*************************/
-
+/**************************************************/
 int game(SNAKE& snake){
   ScoreWinInit(snake);
   MissionWinInit(snake);
-  MissionInit();
+  //Stage_1Init(snake);
   if(&snake == &snake1) Stage_1Init(snake);
   else if(&snake == &snake2) Stage_2Init(snake);
   else if(&snake == &snake3) Stage_3Init(snake);
@@ -752,6 +755,7 @@ int main(){
     if (snake1.success==false) break;
     getch();
     snake1 = {};
+    mission = {};
   }
   getch();
 //stage_2
@@ -760,6 +764,7 @@ int main(){
     if (snake2.success==false) break;
     getch();
     snake2 = {};
+    mission = {};
   }
   getch();
 //stage_3
@@ -768,6 +773,7 @@ int main(){
     if (snake3.success==false) break;
     getch();
     snake3 = {};
+    mission = {};
   }
   getch();
 //stage_4
@@ -776,6 +782,7 @@ int main(){
     if (snake4.success==false) break;
     getch();
     snake4 = {};
+    mission = {};
   }
 /*finish*/
   getch();
