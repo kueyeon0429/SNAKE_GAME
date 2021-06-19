@@ -2,13 +2,27 @@
 #include <ncurses.h>
 #include <iostream>
 #include <ctime>
+#include <termios.h> // kbhit()
+#include <sys/ioctl.h> // kbhit()
 #include "snake.h"
-#include "kbhit.h"
 using namespace std;
 
 const double HALF_SECOND = 0.5;
 
 SNAKE snake;   // SNAKE 객체 생성
+
+// kbgit()
+int kbhit() {
+    termios term;
+    tcgetattr(0, &term);
+    termios term2 = term;
+    term2.c_lflag &= ~ICANON;
+    tcsetattr(0, TCSANOW, &term2);
+    int byteswaiting;
+    ioctl(0, FIONREAD, &byteswaiting);
+    tcsetattr(0, TCSANOW, &term);
+    return byteswaiting > 0;
+}
 
 // 옵션 초기화
 void OptionInit(){
